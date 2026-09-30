@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kuiz Tahun 2">
+<link rel="apple-touch-icon" href="icon-quiz.png">
+<link rel="icon" href="icon-quiz.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Kuiz Tahun 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&family=Noto+Sans+SC:wght@400;700&display=swap">
+<style>
+/* Layout: one exercise-book page, lined paper with a red margin; subject tabs on top, big tap targets for small hands */
+:root{
+  --bg:#eef4fa; --paper:#fbfdff; --rule:#d6e5f3; --margin:#e79a94;
+  --ink:#1d3557; --muted:#5a6f8a; --pencil:#f2b705; --pencil-ink:#3b2c00;
+  --good:#23915a; --good-bg:#e3f5ea; --bad:#cf3f3f; --bad-bg:#fdeaea;
+  --easy:#23915a; --medium:#c98a00; --hard:#cf3f3f;
+  --s-en:#2f6fd0; --s-bm:#0f8a86; --s-zh:#c2410c; --s-sci:#4d7c0f; --s-math:#7c3aed;
+  --btn:#ffffff; --btn-line:#bfd2e6; --shadow:0 2px 0 #bfd2e6;
+  --display:"Baloo 2","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --body:"Andika","Noto Sans SC","PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1826; --paper:#16233a; --rule:#22334d; --margin:#8d3f3b;
+  --ink:#e6eef8; --muted:#9db0c8; --pencil:#f2c94c; --pencil-ink:#2a1f00;
+  --good:#5fd08f; --good-bg:#153526; --bad:#ff7a7a; --bad-bg:#3a1a1d;
+  --easy:#5fd08f; --medium:#f2c94c; --hard:#ff7a7a;
+  --s-en:#7fb0ff; --s-bm:#4fd1c5; --s-zh:#ff9a5c; --s-sci:#a3d65c; --s-math:#b99bff;
+  --btn:#1c2c47; --btn-line:#2f4566; --shadow:0 2px 0 #0a111c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1826; --paper:#16233a; --rule:#22334d; --margin:#8d3f3b;
+  --ink:#e6eef8; --muted:#9db0c8; --pencil:#f2c94c; --pencil-ink:#2a1f00;
+  --good:#5fd08f; --good-bg:#153526; --bad:#ff7a7a; --bad-bg:#3a1a1d;
+  --easy:#5fd08f; --medium:#f2c94c; --hard:#ff7a7a;
+  --s-en:#7fb0ff; --s-bm:#4fd1c5; --s-zh:#ff9a5c; --s-sci:#a3d65c; --s-math:#b99bff;
+  --btn:#1c2c47; --btn-line:#2f4566; --shadow:0 2px 0 #0a111c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;padding:0 16px}
+.wrap{max-width:660px;margin:0 auto;padding-block:20px 40px}
+header{margin-bottom:14px}
+h1{font-family:var(--display);font-weight:800;font-size:1.7rem;margin:0;line-height:1.1;text-wrap:balance}
+h1 small{display:block;font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.page{background:var(--paper);border:1px solid var(--btn-line);border-radius:14px;position:relative;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 35px,var(--rule) 35px,var(--rule) 36px);
+  padding:22px 20px 22px 44px}
+.page::before{content:"";position:absolute;top:0;bottom:0;left:28px;width:2px;background:var(--margin)}
+.label{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.subjects{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:18px}
+.subj{font:inherit;cursor:pointer;background:var(--btn);color:var(--ink);border:2px solid var(--btn-line);border-radius:12px;padding:10px 4px 8px;display:grid;justify-items:center;gap:2px;box-shadow:var(--shadow);min-width:0}
+.subj .ic{width:40px;height:40px;border-radius:10px;background:var(--c);color:var(--paper);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.25rem}
+.subj b{font-size:.9rem;line-height:1.15;text-align:center}
+.subj span{font-size:.72rem;color:var(--muted);text-align:center;line-height:1.1}
+.subj[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--btn))}
+.subj:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.levels{display:grid;gap:12px}
+.level{display:flex;align-items:center;gap:14px;text-align:left;background:var(--btn);border:2px solid var(--btn-line);border-radius:12px;padding:14px 16px;cursor:pointer;color:var(--ink);font:inherit;box-shadow:var(--shadow)}
+.level:hover,.level:focus-visible{border-color:var(--c);outline:none}
+.level .dot{flex:none;width:46px;height:46px;border-radius:50%;background:var(--c);color:var(--paper);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.3rem}
+.level b{font-family:var(--display);font-size:1.25rem;display:block;line-height:1.1}
+.level span{color:var(--muted);font-size:.9rem;display:block}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.seg{display:inline-flex;border:2px solid var(--btn-line);border-radius:10px;overflow:hidden}
+.seg button{font:inherit;border:0;background:var(--btn);color:var(--ink);padding:6px 14px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--pencil);color:var(--pencil-ink);font-weight:700}
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.chip{font-family:var(--display);font-weight:700;font-size:.9rem;padding:1px 10px;border-radius:99px;border:2px solid var(--c);color:var(--c);white-space:nowrap}
+.progress{flex:1 1 80px;height:10px;background:var(--rule);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--pencil);transition:width .3s}
+.count{font-weight:700;color:var(--muted)}
+.qtype{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.visual{font-size:3.4rem;line-height:1.2;margin:4px 0 8px;word-break:break-word}
+.visual .hz{font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;font-size:4.2rem;font-weight:700;display:inline-block;border:2px dashed var(--btn-line);border-radius:10px;padding:0 18px;background:var(--btn)}
+.visual .fig{display:block;max-width:100%;height:auto}
+.visual .count-grid{display:block;font-size:2.2rem;letter-spacing:.12em;line-height:1.35;max-width:14em}
+.visual .notes{display:flex;flex-wrap:wrap;gap:8px}
+.visual .notes i{font-style:normal;font-family:var(--display);font-weight:800;font-size:1.3rem;background:var(--good-bg);color:var(--good);border:2px solid var(--good);border-radius:8px;padding:6px 14px}
+.visual .notes i.coin{border-radius:99px;background:var(--btn);color:var(--medium);border-color:var(--medium)}
+.prompt{font-family:var(--display);font-weight:600;font-size:1.45rem;line-height:1.4;margin:0 0 6px;overflow-wrap:anywhere}
+.prompt .blank{display:inline-block;min-width:3em;border-bottom:3px solid var(--pencil);text-align:center}
+.hint{color:var(--muted);font-size:1rem;margin:0 0 10px}
+.passage{background:var(--btn);border:1px dashed var(--btn-line);border-radius:10px;padding:10px 14px;margin:0 0 12px;font-size:1.05rem}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.opts.wide{grid-template-columns:1fr}
+.opt{font:inherit;font-size:1.2rem;font-weight:700;background:var(--btn);color:var(--ink);border:2px solid var(--btn-line);border-radius:12px;padding:12px 10px;cursor:pointer;box-shadow:var(--shadow);min-width:0;overflow-wrap:anywhere}
+.opts.wide .opt{text-align:left;font-weight:400;font-size:1.05rem}
+.opt:hover:not(:disabled),.opt:focus-visible{border-color:var(--pencil);outline:none}
+.opt:disabled{cursor:default}
+.opt.right{background:var(--good-bg);border-color:var(--good);color:var(--good)}
+.opt.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad);text-decoration:line-through}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px;border:2px solid}
+.fb.ok{background:var(--good-bg);border-color:var(--good)}
+.fb.no{background:var(--bad-bg);border-color:var(--bad)}
+.fb h3{margin:0 0 4px;font-family:var(--display);font-size:1.2rem}
+.fb.ok h3{color:var(--good)} .fb.no h3{color:var(--bad)}
+.fb p{margin:4px 0}
+.fb .ans{font-weight:700}
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+.actions:empty{display:none}
+.btn{font:inherit;font-weight:700;border-radius:12px;padding:10px 20px;cursor:pointer;border:2px solid var(--btn-line);background:var(--btn);color:var(--ink);box-shadow:var(--shadow)}
+.btn.primary{background:var(--pencil);border-color:var(--pencil);color:var(--pencil-ink)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.speak{font:inherit;font-size:.85rem;background:none;border:2px solid var(--btn-line);color:var(--muted);border-radius:99px;padding:1px 10px;cursor:pointer;text-transform:none;letter-spacing:0}
+.result{text-align:center}
+.stars{font-size:2.6rem;letter-spacing:.1em}
+.big{font-family:var(--display);font-weight:800;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.review{text-align:left;margin-top:8px;display:grid;gap:10px}
+.review div{background:var(--btn);border:1px solid var(--btn-line);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.review .q{font-weight:700}
+.muted{color:var(--muted)}
+@media (max-width:520px){.subjects{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:420px){.page{padding-left:36px;padding-right:14px}.page::before{left:22px}.prompt{font-size:1.25rem}.visual{font-size:2.8rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header><h1>Kuiz Tahun 2<small>二年级练习 · KSSR SJK(C)</small></h1></header>
+  <main class="page" id="app"></main>
+</div>
+
+<script>
+const R = a => a[Math.floor(Math.random()*a.length)];
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const opts = (ans, pool, n=4) => shuffle([ans, ...shuffle([...new Set(pool)].filter(x=>x!==ans)).slice(0,n-1)]);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const B = '<span class="blank">___</span>';
+const cap = s => s[0].toUpperCase()+s.slice(1);
+
+// ---------- word banks ----------
+const ANIMALS=[['cat','🐱','猫'],['dog','🐶','狗'],['duck','🦆','鸭子'],['fish','🐟','鱼'],['bird','🐦','鸟'],['rabbit','🐰','兔子'],['elephant','🐘','大象'],['tiger','🐯','老虎'],['monkey','🐒','猴子'],['horse','🐴','马'],['frog','🐸','青蛙'],['cow','🐮','牛'],['owl','🦉','猫头鹰'],['ant','🐜','蚂蚁'],['chicken','🐔','鸡'],['goat','🐐','山羊'],['pig','🐷','猪'],['bee','🐝','蜜蜂']];
+const FOOD=[['apple','🍎','苹果'],['banana','🍌','香蕉'],['orange','🍊','橙'],['egg','🥚','鸡蛋'],['mango','🥭','芒果'],['grapes','🍇','葡萄'],['watermelon','🍉','西瓜'],['bread','🍞','面包'],['milk','🥛','牛奶'],['ice cream','🍦','冰淇淋'],['carrot','🥕','胡萝卜'],['cake','🍰','蛋糕'],['corn','🌽','玉米']];
+const THINGS=[['pencil','✏️','铅笔'],['book','📕','书'],['bag','🎒','书包'],['ruler','📏','尺'],['umbrella','☂️','雨伞'],['clock','⏰','时钟'],['ball','⚽','球'],['car','🚗','车'],['bus','🚌','巴士'],['house','🏠','房子'],['tree','🌳','树'],['star','⭐','星星'],['sun','☀️','太阳'],['moon','🌙','月亮'],['hat','👒','帽子'],['shoe','👟','鞋子'],['shirt','👕','衬衫'],['kite','🪁','风筝'],['bicycle','🚲','脚车'],['flower','🌸','花']];
+const VOCAB=[...ANIMALS,...FOOD,...THINGS];
+const COLOURS=[['red','🔴','红色'],['blue','🔵','蓝色'],['green','🟢','绿色'],['yellow','🟡','黄色'],['black','⚫','黑色'],['white','⚪','白色'],['orange','🟠','橙色'],['purple','🟣','紫色'],['brown','🟤','棕色']];
+const NUM=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAYS_ZH=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const BOYS=['Ali','Ravi','Ah Chong','Kumar','Daniel','Hafiz','Wei Jie'];
+const GIRLS=['Siti','Mei Ling','Aminah','Priya','Sarah','Nurul','Xin Yi'];
+
+// ---------- question generators ----------
+const EN = {
+  pictureWord(){ const [w,e,z]=R(VOCAB);
+    return {type:'Look and choose',key:'pw'+w,visual:e,prompt:'What is this?',
+      options:opts(w,VOCAB.map(v=>v[0])),answer:w,
+      zh:`图片里的是「${z}」，英文叫 <b>${w}</b>。`}; },
+  aAn(){ const list=[...VOCAB.filter(v=>!['grapes','milk','bread','corn'].includes(v[0])),['uncle','👨','叔叔'],['igloo','🧊','冰屋'],['insect','🐛','昆虫']];
+    const [w,e,z]=R(list); const ans=/^[aeiou]/.test(w)?'an':'a';
+    return {type:'a or an',key:'aa'+w,visual:e,prompt:`This is ${B} ${w}.`,options:['a','an'],answer:ans,
+      zh:ans==='an'?`<b>${w}</b>（${z}）是以元音字母 <b>${w[0]}</b> 开头的。元音字母是 a, e, i, o, u，前面要用 <b>an</b>。`
+                   :`<b>${w}</b>（${z}）是以辅音字母 <b>${w[0]}</b> 开头的，所以前面用 <b>a</b>。只有 a, e, i, o, u 开头才用 an。`}; },
+  colour(){ const [w,e,z]=R(COLOURS);
+    return {type:'Colours',key:'co'+w,visual:e,prompt:'What colour is this?',options:opts(w,COLOURS.map(c=>c[0])),answer:w,
+      zh:`这个颜色是「${z}」，英文是 <b>${w}</b>。`}; },
+  countEasy(){ const n=2+Math.floor(Math.random()*9); const [w,e,z]=R([...ANIMALS,...FOOD].filter(v=>v[0]!=='ice cream'));
+    return {type:'Count',key:'cn'+n+w,visual:e.repeat(n),prompt:`How many? There are ${B}.`,
+      options:opts(NUM[n],[NUM[n-1],NUM[n+1],NUM[n+2]||NUM[n-2],NUM[Math.max(1,n-2)]]),answer:NUM[n],
+      zh:`数一数，一共有 ${n} 个${z}。数字 ${n} 的英文是 <b>${NUM[n]}</b>。`}; },
+  missingLetter(){ const pool=VOCAB.filter(v=>/^[a-z]{3,5}$/.test(v[0])); const [w,e,z]=R(pool);
+    const i=Math.floor(Math.random()*w.length); const L=w[i];
+    const others=shuffle('aeioubcdgmnprst'.split('').filter(c=>c!==L)).slice(0,2);
+    const shown=w.split('').map((c,k)=>k===i?'_':c).join(' ');
+    return {type:'Missing letter',key:'ml'+w,visual:e,prompt:shown,options:shuffle([L,...others]),answer:L,
+      zh:`这个是「${z}」，正确拼写是 <b>${w}</b>（${w.split('').join('-')}），所以缺的字母是 <b>${L}</b>。`}; },
+  bodyPart(){ const T=[['I see with my','eyes','眼睛','看'],['I hear with my','ears','耳朵','听'],['I smell with my','nose','鼻子','闻'],['I eat with my','mouth','嘴巴','吃东西'],['I write with my','hand','手','写字'],['I walk with my','legs','腿','走路'],['I kick the ball with my','foot','脚','踢球'],['I brush my','teeth','牙齿','刷']];
+    const [s,a,z,v]=R(T); const emo={eyes:'👀',ears:'👂',nose:'👃',mouth:'👄',hand:'✋',legs:'🦵',foot:'🦶',teeth:'🦷'};
+    return {type:'My body',key:'bp'+a,visual:'🧒',prompt:`${s} ${B}.`,options:opts(a,T.map(t=>t[1])),answer:a,
+      zh:`我们用${z}来${v}。${z}的英文是 <b>${a}</b> ${emo[a]}。`}; },
+  isAre(){ const T=[['The cat','s','sleeping on the mat.'],['The cats','p','sleeping on the mat.'],['My mother','s','a teacher.'],['My parents','p','at home.'],['Ali','s','in Year 2.'],['Ali and Ravi','p','good friends.'],['The apple','s','red.'],['The apples','p','sweet.'],['The sky','s','blue.'],['The birds','p','in the tree.'],['My bag','s','heavy.'],['The children','p','in the classroom.'],['It','s','a sunny day.'],['They','p','playing football.'],['She','s','my sister.'],['We','p','happy today.'],['I','i','seven years old.'],['I','i','in the canteen.'],['You','p','my best friend.'],['There','s','a cat under the table.'],['There','p2','three ducks in the pond.']];
+    const [s,n,rest]=R(T); const ans=n==='i'?'am':(n==='p'||n==='p2')?'are':'is';
+    let zh = n==='i'?'主语是 <b>I</b>（我），I 后面永远用 <b>am</b>。'
+      : s==='You'?'<b>You</b>（你）后面用 <b>are</b>。'
+      : s==='There'? (ans==='is'?'后面是一样东西（a cat，单数），所以用 <b>There is</b>。':'后面是很多样东西（three ducks，复数），所以用 <b>There are</b>。')
+      : ans==='is'?`<b>${s}</b> 是一个人或一样东西（单数），所以用 <b>is</b>。`
+      : `<b>${s}</b> 是两个或以上（复数），所以用 <b>are</b>。`;
+    return {type:'is / am / are',key:'ia'+s+rest,prompt:`${s} ${B} ${rest}`,options:['is','am','are'],answer:ans,zh}; },
+  plural(level){ const T=[['cat','s','猫'],['dog','s','狗'],['book','s','书'],['pencil','s','铅笔'],['bird','s','鸟'],['tree','s','树'],['box','es','箱子'],['bus','es','巴士'],['dish','es','碟子'],['watch','es','手表'],['glass','es','杯子'],['brush','es','刷子'],['tomato','es','番茄'],['baby','ies','婴儿'],['lorry','ies','罗里'],['lady','ies','女士'],['cherry','ies','樱桃'],['butterfly','ies','蝴蝶']];
+    const pool=level==='hard'?T.filter(t=>t[1]!=='s'):T; const [w,r,z]=R(pool);
+    const pl = r==='ies'? w.slice(0,-1)+'ies' : w+r;
+    const wrongs=[w+'s',w+'es',w.endsWith('y')?w.slice(0,-1)+'ys':w+'ies',w].filter(x=>x!==pl);
+    const n=2+Math.floor(Math.random()*8);
+    const rule = r==='s'?`一般的名词，变复数直接加 <b>s</b>：${w} → <b>${pl}</b>。`
+      : r==='es'?`以 s, x, sh, ch, o 结尾的词，变复数要加 <b>es</b>：${w} → <b>${pl}</b>。`
+      : `以「辅音字母 + y」结尾的词，要把 y 变成 i 再加 <b>es</b>：${w} → <b>${pl}</b>。`;
+    return {type:'One and many',key:'pl'+w,prompt:`one ${w}, ${NUM[n]} ${B}`,options:opts(pl,wrongs),answer:pl,
+      zh:`「${z}」多过一个时要用复数。${rule}`}; },
+  irregular(){ const T=[['child','children','小孩'],['man','men','男人'],['woman','women','女人'],['foot','feet','脚'],['tooth','teeth','牙齿'],['mouse','mice','老鼠'],['fish','fish','鱼'],['sheep','sheep','羊'],['goose','geese','鹅'],['leaf','leaves','叶子'],['knife','knives','刀'],['person','people','人']];
+    const [w,p,z]=R(T); const n=2+Math.floor(Math.random()*8);
+    const note = w===p?`<b>${w}</b> 的复数和单数一样，不用加 s。`
+      : /f(e)?$/.test(w)?`以 f / fe 结尾的词，要把 f 变成 v 再加 es：${w} → <b>${p}</b>。`
+      : `<b>${w}</b> 是特别的词，复数不加 s，要背起来：${w} → <b>${p}</b>。`;
+    return {type:'Special plurals',key:'ir'+w,prompt:`one ${w}, ${NUM[n]} ${B}`,options:opts(p,[w+'s',w+'es',w,p+'s']),answer:p,
+      zh:`「${z}」${note}`}; },
+  preposition(){ const things=[['cat','猫'],['ball','球'],['book','书'],['doll','洋娃娃'],['pencil','铅笔'],['dog','狗']];
+    const places=[['box','箱子'],['table','桌子'],['chair','椅子'],['bed','床'],['bag','书包'],['door','门']];
+    const P=[['in','里面'],['on','上面'],['under','下面'],['behind','后面'],['next to','旁边']];
+    const [t,tz]=R(things); const [p,pz]=R(places.filter(x=>x[0]!==t)); const [pr,prz]=R(P);
+    return {type:'Where is it?',key:'pr'+t+p+pr,prompt:`The ${t} is ${B} the ${p}.`,hint:`（${tz}在${pz}${prz}）`,
+      options:opts(pr,P.map(x=>x[0])),answer:pr,
+      zh:`「${prz}」的英文是 <b>${pr}</b>。记住：in 里面，on 上面，under 下面，behind 后面，next to 旁边。`}; },
+  opposite(){ const T=[['big','small','大','小'],['hot','cold','热','冷'],['tall','short','高','矮'],['happy','sad','开心','伤心'],['fast','slow','快','慢'],['open','close','开','关'],['up','down','上','下'],['old','new','旧','新'],['clean','dirty','干净','脏'],['day','night','白天','晚上'],['fat','thin','胖','瘦'],['in','out','里','外'],['wet','dry','湿','干'],['full','empty','满','空'],['heavy','light','重','轻'],['long','short','长','短']];
+    const [a,b,za,zb]=R(T); const flip=Math.random()<.5; const q=flip?b:a, ans=flip?a:b;
+    return {type:'Opposites',key:'op'+q,prompt:`The opposite of <b>${q}</b> is ${B}.`,
+      options:opts(ans,T.flatMap(t=>[t[0],t[1]]).filter(x=>x!==q)),answer:ans,
+      zh:`<b>${q}</b> 是「${flip?zb:za}」，相反词是「${flip?za:zb}」<b>${ans}</b>。`}; },
+  daySeq(){ const i=Math.floor(Math.random()*7); const after=Math.random()<.5; const j=after?(i+1)%7:(i+6)%7;
+    return {type:'Days of the week',key:'dy'+i+after,prompt:`What day comes ${after?'after':'before'} <b>${DAYS[i]}</b>?`,
+      options:opts(DAYS[j],DAYS.filter(d=>d!==DAYS[i])),answer:DAYS[j],
+      zh:`${DAYS[i]} 是${DAYS_ZH[i]}。${after?'之后':'之前'}的一天是${DAYS_ZH[j]}，英文是 <b>${DAYS[j]}</b>。一星期的顺序：Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday。`}; },
+  monthSeq(){ const i=Math.floor(Math.random()*12); const after=Math.random()<.5; const j=after?(i+1)%12:(i+11)%12;
+    return {type:'Months of the year',key:'mo'+i+after,prompt:`Which month comes ${after?'after':'before'} <b>${MONTHS[i]}</b>?`,
+      options:opts(MONTHS[j],MONTHS.filter(m=>m!==MONTHS[i])),answer:MONTHS[j],
+      zh:`${MONTHS[i]} 是 ${i+1} 月，${after?'下一个':'上一个'}月是 ${j+1} 月，英文是 <b>${MONTHS[j]}</b>。`}; },
+  pronoun(){ const kind=R(['boy','girl','thing','many']); let s,ans,zh;
+    if(kind==='boy'){const n=R(BOYS); s=`${n} is my friend. ${B} is very kind.`; ans='He'; zh=`${n} 是男生，男生用 <b>He</b>（他）。`}
+    else if(kind==='girl'){const n=R(GIRLS); s=`${n} is my classmate. ${B} likes to read.`; ans='She'; zh=`${n} 是女生，女生用 <b>She</b>（她）。`}
+    else if(kind==='thing'){const [w,,z]=R(THINGS); s=`I have a ${w}. ${B} is new.`; ans='It'; zh=`${w}（${z}）是东西，不是人。一样东西或一只动物用 <b>It</b>（它）。`}
+    else {const a=R(BOYS),b=R(GIRLS); s=`${a} and ${b} are in the park. ${B} are playing.`; ans='They'; zh=`${a} 和 ${b} 是两个人（多过一个），所以用 <b>They</b>（他们）。`}
+    return {type:'He / She / It / They',key:'pn'+s,prompt:s,options:['He','She','It','They'],answer:ans,zh}; },
+  haveHas(){ const subj=R([['I','have','我'],['We','have','我们'],['They','have','他们'],['You','have','你'],['He','has','他'],['She','has','她'],['My brother','has','我的哥哥'],[R(GIRLS),'has',''],[R(BOYS),'has',''],['The cat','has','那只猫']]);
+    const obj=R(['a red bag','two pencils','a new bicycle','long hair','a pet rabbit','many books','a big kite']);
+    const [s,a]=subj;
+    return {type:'have / has',key:'hh'+s+obj,prompt:`${s} ${B} ${obj}.`,options:['have','has'],answer:a,
+      zh:a==='have'?`主语是 <b>${s}</b>。I, you, we, they 后面用 <b>have</b>。`:`主语 <b>${s}</b> 是一个人或一只动物（he / she / it），后面用 <b>has</b>。`}; },
+  addWords(){ const a=1+Math.floor(Math.random()*10), b=1+Math.floor(Math.random()*10), c=a+b;
+    return {type:'Numbers',key:'ad'+a+b,prompt:`${a} + ${b} = ${B}`,options:opts(NUM[c],[NUM[c-1],NUM[Math.min(20,c+1)],NUM[Math.max(1,c-2)],NUM[Math.min(20,c+2)]]),answer:NUM[c],
+      zh:`${a} 加 ${b} 等于 ${c}，${c} 的英文是 <b>${NUM[c]}</b>。`}; },
+  _verbs:[['go','went','goes','going','to the zoo','去'],['eat','ate','eats','eating','nasi lemak','吃'],['drink','drank','drinks','drinking','some milk','喝'],['see','saw','sees','seeing','a big elephant','看见'],['swim','swam','swims','swimming','in the pool','游泳'],['run','ran','runs','running','around the field','跑'],['buy','bought','buys','buying','a new pencil','买'],['write','wrote','writes','writing','a letter','写'],['sing','sang','sings','singing','a song','唱'],['play','played','plays','playing','badminton','玩/打'],['cook','cooked','cooks','cooking','fried rice','煮'],['visit','visited','visits','visiting','Grandma','拜访'],['make','made','makes','making','a kite','做'],['read','read','reads','reading','a storybook','读']],
+  past(){ const [b,p,s,i,o,z]=R(EN._verbs); const who=R([...BOYS,...GIRLS,'I','We','My father']); const when=R(['Yesterday','Last Sunday','Last week']);
+    const reg=p.endsWith('ed');
+    return {type:'Past tense',key:'pt'+b,prompt:`${when}, ${who} ${B} ${o}.`,hint:`(${b})`,options:shuffle([p,b===p?b+'ed':b,s,i].filter((x,k,a)=>a.indexOf(x)===k)),answer:p,
+      zh:`句子里有 <b>${when}</b>，表示「已经发生的事」，要用过去式。${reg?`<b>${b}</b>（${z}）的过去式是直接加 ed → <b>${p}</b>。`:`<b>${b}</b>（${z}）的过去式很特别，要背：${b} → <b>${p}</b>。`}`}; },
+  simplePresent(){ const [b,p,s,i,o,z]=R(EN._verbs); const n=R([...BOYS,...GIRLS]); const when=R(['every day','every Saturday','every morning']);
+    return {type:'Every day',key:'sp'+b,prompt:`${n} ${B} ${o} ${when}.`,hint:`(${b})`,options:shuffle([s,b,p===b?i:p,i].filter((x,k,a)=>a.indexOf(x)===k)),answer:s,
+      zh:`<b>${when}</b> 表示「习惯/经常做的事」。主语 ${n} 是一个人（he / she），动词要加 s 或 es：${b} → <b>${s}</b>（${z}）。`}; },
+  continuous(){ const [b,p,s,i,o,z]=R(EN._verbs); const n=R([...BOYS,...GIRLS]);
+    const dbl=/(mm|nn)ing$/.test(i), dropE=b.endsWith('e')&&!b.endsWith('ee');
+    return {type:'Happening now',key:'ct'+b,prompt:`Look! ${n} is ${B} ${o} now.`,hint:`(${b})`,options:shuffle([i,b,s,p===b?b+'s':p].filter((x,k,a)=>a.indexOf(x)===k)),answer:i,
+      zh:`<b>Look!</b> 和 <b>now</b> 表示「正在做」，要用 is + 动词ing。${dbl?`${b} 要双写最后一个字母再加 ing → <b>${i}</b>。`:dropE?`${b} 以 e 结尾，去掉 e 再加 ing → <b>${i}</b>。`:`${b} 直接加 ing → <b>${i}</b>。`}（${z}）`}; },
+  sentence(){ const T=[['I like to eat apples.','我喜欢吃苹果。'],['My cat is very cute.','我的猫很可爱。'],['We go to school by bus.','我们搭巴士去学校。'],['She has a blue bag.','她有一个蓝色的书包。'],['The sun is very hot today.','今天太阳很热。'],['Ali is playing football.','阿里在踢足球。'],['My mother is a nurse.','我的妈妈是护士。'],['There are five ducks in the pond.','池塘里有五只鸭子。'],['I brush my teeth every morning.','我每天早上刷牙。'],['Can you swim?','你会游泳吗？'],['The book is on the table.','书在桌子上。'],['They are reading in the library.','他们在图书馆看书。']];
+    const [c,z]=R(T); const end=c.slice(-1); const words=c.slice(0,-1).split(' ');
+    const keep=w=>w==='I'||w==='Ali'; const norm=w=>keep(w)?w:w.toLowerCase();
+    const make=ws=>{const t=ws.map(norm); t[0]=cap(t[0]); return t.join(' ')+end;};
+    const wrong=new Set(); let guard=0;
+    while(wrong.size<3&&guard++<50){const s=make(shuffle(words)); if(s!==c) wrong.add(s);}
+    return {type:'Correct sentence',key:'sn'+c,prompt:'Which sentence is correct?',wide:true,options:shuffle([c,...wrong]),answer:c,
+      zh:`正确的句子是 <b>${c}</b> 意思是「${z}」。英文句子的顺序一般是：谁 + 做什么/是什么 + 其他。`}; },
+  questionWord(){ const T=[['___ is your name?','What','问「什么」用 What。这句是：你叫什么名字？'],['___ do you live?','Where','问「哪里/地方」用 Where。这句是：你住在哪里？'],['___ is your teacher?','Who','问「谁」用 Who。这句是：谁是你的老师？'],['___ is your birthday?','When','问「什么时候」用 When。这句是：你的生日是什么时候？'],['___ old are you?','How','问年龄用 How old。这句是：你几岁？'],['___ are you crying?','Why','问「为什么」用 Why。这句是：你为什么哭？'],['___ is the cat? It is under the table.','Where','回答说「在桌子下面」，是地方，所以用 Where。'],['___ is that man? He is my father.','Who','回答说「他是我爸爸」，是人，所以用 Who。'],['___ colour is your bag?','What','问颜色用 What colour。'],['___ many books do you have?','How','问「多少个」用 How many。'],['___ do you go to school? At seven o\'clock.','When','回答是时间（七点），所以用 When。']];
+    const [q,a,z]=R(T);
+    return {type:'Question words',key:'qw'+q,prompt:q.replace('___',B),options:opts(a,['What','Where','Who','When','How','Why']),answer:a,
+      zh:`答案是 <b>${a}</b>。${z}`}; },
+  story(){ const girl=Math.random()<.5; const n=R(girl?GIRLS:BOYS); const he=girl?'She':'He', his=girl?'Her':'His';
+    const age=R([7,8]); const [pet,,petz]=R(ANIMALS.filter(a=>['cat','dog','rabbit','fish','bird','duck'].includes(a[0])));
+    const petName=R(['Tompok','Comel','Bobo','Lucky','Mimi','Oyen']); const [fr,,frz]=R(FOOD.filter(f=>['apple','banana','mango','watermelon','orange','grapes'].includes(f[0])));
+    const [hob,hobz]=R([['play badminton','打羽毛球'],['draw pictures','画画'],['ride a bicycle','骑脚车'],['read storybooks','看故事书'],['swim','游泳'],['sing songs','唱歌']]);
+    const passage=`My name is ${n}. I am ${NUM[age]} years old. I have a ${pet}. Its name is ${petName}. My favourite fruit is ${fr==='grapes'?'grapes':fr}. I like to ${hob}.`;
+    const Qs=[
+      [`How old is ${n}?`,`${cap(NUM[age])} years old.`,[`Six years old.`,`Nine years old.`,`${cap(NUM[age===7?8:7])} years old.`],`文中说 “I am ${NUM[age]} years old”，意思是 ${n} ${age} 岁。`],
+      [`What pet does ${n} have?`,`A ${pet}.`,shuffle(['cat','dog','rabbit','fish','bird','duck'].filter(x=>x!==pet)).slice(0,3).map(x=>`A ${x}.`),`文中说 “I have a ${pet}”，${n} 养了一只${petz}。`],
+      [`What is the name of ${n}'s ${pet}?`,`${petName}.`,shuffle(['Tompok','Comel','Bobo','Lucky','Mimi','Oyen'].filter(x=>x!==petName)).slice(0,3).map(x=>x+'.'),`文中说 “Its name is ${petName}”，宠物的名字是 ${petName}。`],
+      [`What is ${n}'s favourite fruit?`,`${cap(fr)}.`,shuffle(['apple','banana','mango','watermelon','orange','grapes'].filter(x=>x!==fr)).slice(0,3).map(x=>cap(x)+'.'),`文中说 “My favourite fruit is ${fr}”，${n} 最喜欢的水果是${frz}。`],
+      [`What does ${n} like to do?`,`${he} likes to ${hob}.`,shuffle(['play badminton','draw pictures','ride a bicycle','read storybooks','swim','sing songs'].filter(x=>x!==hob)).slice(0,3).map(x=>`${he} likes to ${x}.`),`文中说 “I like to ${hob}”，${n} 喜欢${hobz}。`]];
+    const [q,a,w,z]=R(Qs);
+    return {type:'Read and answer',key:'st'+q,passage,prompt:q,wide:true,options:shuffle([a,...w]),answer:a,
+      zh:`${z} 所以答案是 <b>${a}</b> 做阅读题时，先回到短文里找关键词。`}; },
+  spelling(level){ const extra=[['school','学校'],['teacher','老师'],['yellow','黄色'],['purple','紫色'],['Monday','星期一'],['Friday','星期五'],['garden','花园'],['friend','朋友'],['family','家人'],['window','窗户'],['kitchen','厨房'],['orange','橙色']];
+    let pool=[...VOCAB.filter(v=>/^[a-z]+$/.test(v[0])).map(v=>[v[0],v[2]]),...extra];
+    pool=pool.filter(p=>level==='hard'?p[0].length>=6:p[0].length>=4&&p[0].length<=6);
+    const [w,z]=R(pool); const bad=new Set(); let g=0;
+    const mut=[s=>{const i=1+Math.floor(Math.random()*(s.length-2));return s.slice(0,i)+s[i+1]+s[i]+s.slice(i+2)},
+               s=>{const i=1+Math.floor(Math.random()*(s.length-1));return s.slice(0,i)+s.slice(i+1)},
+               s=>{const i=1+Math.floor(Math.random()*(s.length-1));return s.slice(0,i)+s[i]+s.slice(i)},
+               s=>s.replace(/[aeiou]/,v=>R('aeiou'.replace(v,'').split('')))];
+    while(bad.size<3&&g++<60){const m=R(mut)(w); if(m!==w&&m.length>2) bad.add(m);}
+    return {type:'Spelling',key:'sp'+w,prompt:`Which word is spelled correctly?`,hint:`（${z}）`,options:shuffle([w,...bad]),answer:w,
+      zh:`「${z}」的正确拼写是 <b>${w}</b>：${w.split('').join(' - ')}。多读几次，把字母顺序记住。`}; },
+};
+
+
+// =====================================================================
+// BAHASA MELAYU
+// =====================================================================
+const BM_PIC=[['kucing','🐱','猫'],['anjing','🐶','狗'],['itik','🦆','鸭子'],['ikan','🐟','鱼'],['burung','🐦','鸟'],['arnab','🐰','兔子'],['gajah','🐘','大象'],['harimau','🐯','老虎'],['monyet','🐒','猴子'],['kuda','🐴','马'],['katak','🐸','青蛙'],['lembu','🐮','牛'],['ayam','🐔','鸡'],['epal','🍎','苹果'],['pisang','🍌','香蕉'],['telur','🥚','鸡蛋'],['tembikai','🍉','西瓜'],['roti','🍞','面包'],['susu','🥛','牛奶'],['pensel','✏️','铅笔'],['buku','📕','书'],['beg','🎒','书包'],['payung','☂️','雨伞'],['jam','⏰','时钟'],['bola','⚽','球'],['kereta','🚗','车'],['bas','🚌','巴士'],['rumah','🏠','房子'],['pokok','🌳','树'],['bintang','⭐','星星'],['matahari','☀️','太阳'],['bulan','🌙','月亮'],['kasut','👟','鞋子'],['baju','👕','衣服'],['bunga','🌸','花'],['basikal','🚲','脚车'],['kapal terbang','✈️','飞机'],['topi','👒','帽子']];
+const BM_WARNA=[['merah','🔴','红色'],['biru','🔵','蓝色'],['hijau','🟢','绿色'],['kuning','🟡','黄色'],['hitam','⚫','黑色'],['putih','⚪','白色'],['ungu','🟣','紫色'],['coklat','🟤','棕色'],['oren','🟠','橙色']];
+const BM_ANT=[['besar','kecil','大','小'],['tinggi','rendah','高','矮/低'],['panjang','pendek','长','短'],['panas','sejuk','热','冷'],['cepat','lambat','快','慢'],['buka','tutup','开','关'],['masuk','keluar','进','出'],['naik','turun','上','下'],['gemuk','kurus','胖','瘦'],['bersih','kotor','干净','脏'],['siang','malam','白天','晚上'],['gembira','sedih','开心','伤心'],['jauh','dekat','远','近'],['berat','ringan','重','轻'],['penuh','kosong','满','空'],['basah','kering','湿','干'],['kaya','miskin','富有','贫穷'],['baru','lama','新','旧']];
+const BM_ANT_OK={tinggi:['pendek'],pendek:['tinggi'],rendah:['panjang'],lama:['sekejap']};
+const BM_SUKU=[['ba','ju'],['bu','ku'],['ma','ta'],['ru','mah'],['ku','cing'],['pen','sel'],['se','ko','lah'],['ke','re','ta'],['pa','yung'],['ba','si','kal'],['ka','sut'],['ma','kan'],['i','kan'],['a','yam'],['gu','ru'],['pi','sang'],['ta','man'],['bin','tang'],['me','ja'],['ke','ru','si'],['pin','tu'],['ting','kap'],['ga','jah'],['ha','ri','mau'],['bu','nga'],['sa','yur'],['ka','wan']];
+const BM_PJ_INFO={ekor:'动物',buah:'大的东西，例如车、房子、书',batang:'长长的东西，例如铅笔、河流',helai:'薄薄的东西，例如衣服、叶子',biji:'圆圆的小东西，例如球、苹果、鸡蛋',kuntum:'花',pasang:'成双成对的东西，例如鞋子、袜子',kaki:'雨伞',orang:'人',pucuk:'信',utas:'绳子、链子',pohon:'树'};
+const BM_PJ=[['kucing','ekor','🐱','猫'],['ikan','ekor','🐟','鱼'],['burung','ekor','🐦','鸟'],['itik','ekor','🦆','鸭子'],['kereta','buah','🚗','车'],['rumah','buah','🏠','房子'],['buku','buah','📕','书'],['bas','buah','🚌','巴士'],['pensel','batang','✏️','铅笔'],['sungai','batang','🏞️','河'],['baju','helai','👕','衣服'],['daun','helai','🍃','叶子'],['bola','biji','⚽','球'],['epal','biji','🍎','苹果'],['telur','biji','🥚','鸡蛋'],['bunga','kuntum','🌸','花'],['kasut','pasang','👟','鞋子'],['stokin','pasang','🧦','袜子'],['payung','kaki','☂️','雨伞'],['guru','orang','🧑‍🏫','老师'],['murid','orang','🧒','学生'],['surat','pucuk','✉️','信'],['tali','utas','🪢','绳子'],['pokok','pohon','🌳','树']];
+const BM_PJ_OK={pokok:['batang']};
+const BM_NAMA=['Ali','Siti','Aminah','Abu','Mei Ling','Ravi','Ah Chong','Nurul','Farid','Kavitha'];
+const BM_SENDI=[['Adik bermain ___ taman.','di'],['Kami pergi ___ sekolah setiap hari.','ke'],['Ayah baru balik ___ pejabat.','dari'],['Siti memberi hadiah ___ ibunya.','kepada'],['Buku saya ada ___ atas meja.','di'],['Emak pergi ___ pasar.','ke'],['Kucing itu tidur ___ bawah kerusi.','di'],['Pak Ali datang ___ Ipoh.','dari'],['Cikgu bercakap ___ murid-murid.','kepada'],['Kami berjalan ___ rumah ke sekolah.','dari'],['Abang menulis surat ___ kawannya.','kepada'],['Ali berlari ___ padang.','ke']];
+const BM_SENDI_ZH={di:'<b>di</b> 表示「在」某个地方。',ke:'<b>ke</b> 表示「去/到」某个地方。',dari:'<b>dari</b> 表示「从」某个地方。',kepada:'<b>kepada</b> 用在「人」的前面，表示「给/对」某人。'};
+const BM_TANYA=[['___ nama kamu?','Siapa','问名字要用 <b>Siapa</b>（不是 Apa）。'],['___ kamu tinggal?','Di mana','问「在哪里」用 <b>Di mana</b>。'],['___ hari jadi kamu?','Bila','问「什么时候」用 <b>Bila</b>。'],['___ umur kamu?','Berapa','问年龄、数量用 <b>Berapa</b>。'],['___ kamu menangis?','Mengapa','问「为什么」用 <b>Mengapa</b>。'],['___ warna beg kamu?','Apa','问东西、颜色用 <b>Apa</b>。'],['___ yang memasak nasi? Ibu.','Siapa','回答是一个人（Ibu），所以用 <b>Siapa</b>。'],['___ buku saya? Di atas meja.','Di mana','回答是地方（Di atas meja），所以用 <b>Di mana</b>。'],['___ ekor kucing kamu? Tiga ekor.','Berapa','回答是数量（三只），所以用 <b>Berapa</b>。'],['___ kita ke zoo? Hari Sabtu.','Bila','回答是时间（星期六），所以用 <b>Bila</b>。'],['___ kamu lewat? Saya bangun lambat.','Mengapa','回答说的是原因，所以用 <b>Mengapa</b>。'],['___ itu? Itu sebatang pensel.','Apa','问「那是什么东西」用 <b>Apa</b>。']];
+const BM_KERJA=[['baca','membaca','dibaca','pembaca','bacaan','buku cerita','读'],['tulis','menulis','ditulis','penulis','tulisan','surat','写'],['masak','memasak','dimasak','pemasak','masakan','nasi goreng','煮'],['sapu','menyapu','disapu','penyapu','sapuan','lantai','扫'],['tanam','menanam','ditanam','penanam','tanaman','pokok bunga','种'],['lukis','melukis','dilukis','pelukis','lukisan','gambar kucing','画'],['cuci','mencuci','dicuci','pencuci','cucian','pinggan','洗'],['siram','menyiram','disiram','penyiram','siraman','pokok','浇水'],['jahit','menjahit','dijahit','penjahit','jahitan','baju','缝'],['basuh','membasuh','dibasuh','pembasuh','basuhan','kereta','洗']];
+
+const BM = {
+  gambar(){ const [w,e,z]=R(BM_PIC);
+    return {type:'Lihat gambar',key:'g'+w,visual:e,prompt:'Apakah ini?',options:opts(w,BM_PIC.map(v=>v[0])),answer:w,
+      zh:`图片里的是「${z}」，国文叫 <b>${w}</b>。`}; },
+  warna(){ const [w,e,z]=R(BM_WARNA);
+    return {type:'Warna',key:'w'+w,visual:e,prompt:'Apakah warna ini?',options:opts(w,BM_WARNA.map(v=>v[0])),answer:w,
+      zh:`这个颜色是「${z}」，国文是 <b>${w}</b>。`}; },
+  antonim(){ const [a,b,za,zb]=R(BM_ANT); const flip=Math.random()<.5; const q=flip?b:a, ans=flip?a:b;
+    const pool=BM_ANT.flatMap(t=>[t[0],t[1]]).filter(x=>x!==q&&!(BM_ANT_OK[q]||[]).includes(x));
+    return {type:'Antonim',key:'a'+q,prompt:`Lawan kata <b>${q}</b> ialah ${B}.`,options:opts(ans,pool),answer:ans,
+      zh:`<b>${q}</b> 是「${flip?zb:za}」，相反词（antonim）是「${flip?za:zb}」<b>${ans}</b>。`}; },
+  sukuKata(){ const s=R(BM_SUKU); const w=s.join(''), ans=s.join('-'); const wrong=new Set();
+    for(let j=0;j<s.length-1;j++){
+      const a=[...s]; if(a[j+1].length>1){a[j]=a[j]+a[j+1][0];a[j+1]=a[j+1].slice(1);wrong.add(a.join('-'));}
+      const b=[...s]; if(b[j].length>1){b[j+1]=b[j].slice(-1)+b[j+1];b[j]=b[j].slice(0,-1);wrong.add(b.join('-'));}
+    }
+    wrong.delete(ans); const o=shuffle([...wrong]).slice(0,3);
+    return {type:'Suku kata',key:'s'+w,prompt:`Pilih suku kata yang betul untuk perkataan <b>${w}</b>.`,options:shuffle([ans,...o]),answer:ans,
+      zh:`<b>${w}</b> 可以分成 ${s.length} 个音节（suku kata）：<b>${ans}</b>。一般一个音节里有一个元音（a, e, i, o, u）。`}; },
+  penjodoh(){ const [n,pj,e,z]=R(BM_PJ); const PJ=Object.keys(BM_PJ_INFO);
+    const pool=PJ.filter(x=>x!==pj&&!(BM_PJ_OK[n]||[]).includes(x));
+    return {type:'Penjodoh bilangan',key:'p'+n,visual:e,prompt:`Ali ada se${B} ${n}.`,options:opts('se'+pj,pool.map(x=>'se'+x)),answer:'se'+pj,
+      zh:`${n}（${z}）要用 <b>se${pj}</b>。<b>${pj}</b> 用于${BM_PJ_INFO[pj]}。`}; },
+  sendi(){ const [s,a]=R(BM_SENDI);
+    return {type:'Kata sendi nama',key:'k'+s,prompt:s.replace('___',B),options:['di','ke','dari','kepada'],answer:a,
+      zh:`答案是 <b>${a}</b>。${BM_SENDI_ZH[a]}<br>记住：di 在 · ke 去 · dari 从 · kepada 给（人）。`}; },
+  tanya(){ const [q,a,z]=R(BM_TANYA);
+    return {type:'Kata tanya',key:'t'+q,prompt:q.replace('___',B),options:opts(a,['Apa','Siapa','Di mana','Bila','Berapa','Mengapa']),answer:a,zh:z}; },
+  ganti(){ const g=R(['Aminah','Siti','Mei Ling','Nurul']), a=R(['Ali','Abu','Ravi']), b=R(['Farid','Ah Chong','Kumar']);
+    const T=[[`${g} kawan saya. ${B} sangat baik hati.`,'Dia','讲一个人（他/她）用 <b>Dia</b>。'],
+      [`${a} dan ${b} bermain bola. ${B} sangat gembira.`,'Mereka','两个人或以上（他们）用 <b>Mereka</b>。'],
+      [`Saya dan adik pergi ke kedai. ${B} membeli roti.`,'Kami','包括「我」在内的一群人（我们）用 <b>Kami</b>。'],
+      [`"${B} suka makan epal," kata ${a}.`,'Saya','说话的人讲自己（我）用 <b>Saya</b>。'],
+      [`Kucing itu comel. ${B} suka tidur.`,'Dia','讲一只动物时也可以用 <b>Dia</b>。']];
+    const [s,ans,z]=R(T);
+    return {type:'Kata ganti nama',key:'gn'+ans+s.slice(0,6),prompt:s,options:['Saya','Kami','Dia','Mereka'],answer:ans,zh:z}; },
+  ejaan(level){ const extra=[['sekolah','学校'],['kawan','朋友'],['keluarga','家人'],['tingkap','窗户'],['dapur','厨房'],['taman','公园'],['cikgu','老师'],['gembira','开心'],['kerusi','椅子'],['meja','桌子']];
+    let pool=[...BM_PIC.filter(v=>/^[a-z]+$/.test(v[0])).map(v=>[v[0],v[2]]),...extra].filter(p=>level==='hard'?p[0].length>=6:p[0].length>=4);
+    const [w,z]=R(pool);
+    return {type:'Ejaan',key:'e'+w,prompt:'Pilih ejaan yang betul.',hint:`（${z}）`,options:shuffle([w,...misspell(w)]),answer:w,
+      zh:`「${z}」的正确拼写是 <b>${w}</b>：${w.split('').join(' - ')}。`}; },
+  kerja(){ const [r,me,di,pe,an,obj,z]=R(BM_KERJA); const subj=R(['Emak','Ayah','Kakak','Abang','Adik',...BM_NAMA]);
+    return {type:'Kata kerja',key:'kk'+r,prompt:`${subj} sedang ${B} ${obj}.`,hint:`(${r})`,options:shuffle([me,di,pe,an]),answer:me,
+      zh:`<b>sedang</b>（正在）后面要用动作词（kata kerja）。${r}（${z}）加上 me- 变成 <b>${me}</b>。<br>${di} 是「被${z}」，${pe} 是做这件事的人或工具，${an} 是名词。`}; },
+  faham(){ const n=R(BM_NAMA); const age=R([7,8]); const AGE={6:'enam',7:'tujuh',8:'lapan',9:'sembilan'};
+    const pets=[['kucing','猫'],['arnab','兔子'],['ikan','鱼'],['burung','鸟'],['itik','鸭子']]; const [pet,petz]=R(pets);
+    const pnames=['Tompok','Comel','Bobo','Oyen','Si Putih','Manja']; const pn=R(pnames);
+    const fruits=[['epal','苹果'],['pisang','香蕉'],['betik','木瓜'],['durian','榴梿'],['rambutan','红毛丹'],['tembikai','西瓜']]; const [fr,frz]=R(fruits);
+    const hobs=[['bermain badminton','打羽毛球'],['melukis','画画'],['membaca buku cerita','看故事书'],['berenang','游泳'],['menyanyi','唱歌'],['berbasikal','骑脚车']]; const [hob,hobz]=R(hobs);
+    const passage=`Nama saya ${n}. Saya berumur ${AGE[age]} tahun. Saya ada seekor ${pet}. Namanya ${pn}. Buah kegemaran saya ialah ${fr}. Saya suka ${hob}.`;
+    const Qs=[
+      [`Berapakah umur ${n}?`,`${cap(AGE[age])} tahun.`,[6,9,age===7?8:7].map(x=>`${cap(AGE[x])} tahun.`),`短文说 “Saya berumur ${AGE[age]} tahun”，${n} ${age} 岁。`],
+      [`Apakah haiwan peliharaan ${n}?`,`Seekor ${pet}.`,shuffle(pets.filter(p=>p[0]!==pet)).slice(0,3).map(p=>`Seekor ${p[0]}.`),`短文说 “Saya ada seekor ${pet}”，${n} 养了一只${petz}。`],
+      [`Siapakah nama ${pet} ${n}?`,`${pn}.`,shuffle(pnames.filter(x=>x!==pn)).slice(0,3).map(x=>x+'.'),`短文说 “Namanya ${pn}”，宠物的名字是 ${pn}。`],
+      [`Apakah buah kegemaran ${n}?`,`${cap(fr)}.`,shuffle(fruits.filter(f=>f[0]!==fr)).slice(0,3).map(f=>cap(f[0])+'.'),`短文说 “Buah kegemaran saya ialah ${fr}”，${n} 最喜欢的水果是${frz}。`],
+      [`Apakah yang ${n} suka lakukan?`,`Dia suka ${hob}.`,shuffle(hobs.filter(h=>h[0]!==hob)).slice(0,3).map(h=>`Dia suka ${h[0]}.`),`短文说 “Saya suka ${hob}”，${n} 喜欢${hobz}。`]];
+    const [q,a,w,z]=R(Qs);
+    return {type:'Pemahaman',key:'f'+q,passage,prompt:q,wide:true,options:shuffle([a,...w]),answer:a,
+      zh:`${z} 所以答案是 <b>${a}</b> 做理解题时，先回到短文里找关键词。`}; },
+};
+
+// =====================================================================
+// 华语
+// =====================================================================
+const TM={a:'āáǎà',e:'ēéěè',i:'īíǐì',o:'ōóǒò',u:'ūúǔù',v:'ǖǘǚǜ'};
+function py(s,t){ let i=-1;
+  if(s.includes('a')) i=s.indexOf('a'); else if(s.includes('e')) i=s.indexOf('e'); else if(s.includes('ou')) i=s.indexOf('o');
+  else for(let k=s.length-1;k>=0;k--) if('aeiouv'.includes(s[k])){i=k;break;}
+  return (s.slice(0,i)+TM[s[i]][t-1]+s.slice(i+1)).replace(/v/g,'ü'); }
+const TONE_NAME=['','第一声（ˉ）','第二声（ˊ）','第三声（ˇ）','第四声（ˋ）'];
+const ZH_PY={猫:['mao',1,'🐱'],狗:['gou',3,'🐶'],鱼:['yu',2,'🐟'],鸟:['niao',3,'🐦'],花:['hua',1,'🌸'],书:['shu',1,'📕'],水:['shui',3,'💧'],火:['huo',3,'🔥'],山:['shan',1,'⛰️'],大:['da',4],小:['xiao',3],月:['yue',4,'🌙'],人:['ren',2],口:['kou',3,'👄'],手:['shou',3,'✋'],马:['ma',3,'🐴'],牛:['niu',2,'🐮'],羊:['yang',2,'🐑'],米:['mi',3],雨:['yu',3,'🌧️'],云:['yun',2,'☁️'],天:['tian',1],田:['tian',2],石:['shi',2],木:['mu',4],门:['men',2,'🚪'],车:['che',1,'🚗'],我:['wo',3],好:['hao',3],学:['xue',2],老:['lao',3],吃:['chi',1],看:['kan',4],走:['zou',3],跑:['pao',3],飞:['fei',1],红:['hong',2],白:['bai',2],草:['cao',3],树:['shu',4,'🌳'],虫:['chong',2,'🐛'],星:['xing',1,'⭐'],风:['feng',1],家:['jia',1],耳:['er',3,'👂'],刀:['dao',1],猪:['zhu',1,'🐷'],鸡:['ji',1,'🐔'],鸭:['ya',1,'🦆'],兔:['tu',4,'🐰'],蛋:['dan',4,'🥚'],笔:['bi',3,'✏️'],伞:['san',3,'☂️'],日:['ri',4,'☀️']};
+const ZH_CHARS=Object.keys(ZH_PY), ZH_PICS=ZH_CHARS.filter(c=>ZH_PY[c][2]);
+const ZH_ANT=[['大','小'],['多','少'],['上','下'],['左','右'],['高','矮'],['长','短'],['快','慢'],['冷','热'],['开','关'],['来','去'],['哭','笑'],['黑','白'],['早','晚'],['前','后'],['进','出'],['胖','瘦'],['新','旧'],['远','近'],['甜','苦'],['开心','伤心'],['干净','肮脏']];
+const ZH_SYN=[['美丽','漂亮'],['高兴','快乐','开心'],['马上','立刻'],['忽然','突然'],['常常','经常'],['喜欢','喜爱'],['帮助','帮忙'],['干净','清洁'],['生气','愤怒'],['温暖','暖和']];
+const ZH_MW_ALL=['本','只','条','朵','把','辆','张','双','件','支','头','匹','棵','座','架','颗'];
+const ZH_MW=[['书','本','📕','用于书本、簿子'],['猫','只','🐱','用于小动物、鸟'],['鸟','只','🐦','用于小动物、鸟'],['羊','只','🐑','用于小动物'],['鱼','条','🐟','用于长长的东西，例如鱼、河、蛇'],['河','条','🏞️','用于长长的东西'],['蛇','条','🐍','用于长长的东西'],['裤子','条','👖','用于长条形的东西'],['花','朵','🌸','用于花和云'],['云','朵','☁️','用于花和云'],['伞','把','☂️','用于有把手的东西'],['椅子','把','🪑','用于有把手/靠背可以拿的东西'],['车','辆','🚗','用于车子'],['纸','张','📄','用于平平的东西'],['桌子','张','🪑','用于有平面的东西'],['床','张','🛏️','用于有平面的东西'],['鞋','双','👟','用于成对的东西'],['筷子','双','🥢','用于成对的东西'],['衣服','件','👕','用于衣服、事情'],['笔','支','✏️','用于细长的笔'],['牛','头','🐮','用于大的牲口，例如牛、猪'],['马','匹','🐴','用于马'],['树','棵','🌳','用于树和草'],['山','座','⛰️','用于大而稳固的东西，例如山、桥'],['桥','座','🌉','用于大而稳固的东西'],['飞机','架','✈️','用于飞机'],['星星','颗','⭐','用于小而圆的东西']];
+const ZH_MW_OK={鱼:['只','尾'],牛:['只'],羊:['头'],花:['支'],鞋:['只'],桥:['条'],蛇:['只'],笔:['枝'],马:['头']};
+const ZH_RAD=[['妈','女','女字旁','和女性有关'],['姐','女','女字旁','和女性有关'],['妹','女','女字旁','和女性有关'],['河','氵','三点水','和水有关'],['海','氵','三点水','和水有关'],['洗','氵','三点水','和水有关'],['江','氵','三点水','和水有关'],['树','木','木字旁','和树木有关'],['林','木','木字旁','和树木有关'],['桥','木','木字旁','和树木有关'],['吃','口','口字旁','和嘴巴有关'],['叫','口','口字旁','和嘴巴有关'],['唱','口','口字旁','和嘴巴有关'],['打','扌','提手旁','和手的动作有关'],['拍','扌','提手旁','和手的动作有关'],['拉','扌','提手旁','和手的动作有关'],['你','亻','单人旁','和人有关'],['他','亻','单人旁','和人有关'],['们','亻','单人旁','和人有关'],['花','艹','草字头','和花草植物有关'],['草','艹','草字头','和花草植物有关'],['说','讠','言字旁','和说话有关'],['话','讠','言字旁','和说话有关'],['跑','足','足字旁','和脚的动作有关'],['跳','足','足字旁','和脚的动作有关'],['路','足','足字旁','和脚、走路有关'],['眼','目','目字旁','和眼睛有关'],['睡','目','目字旁','和眼睛有关'],['晴','日','日字旁','和太阳、时间有关'],['明','日','日字旁','和太阳、光有关'],['红','纟','绞丝旁','和丝线有关'],['线','纟','绞丝旁','和丝线有关'],['灯','火','火字旁','和火有关'],['烧','火','火字旁','和火有关'],['铅','钅','金字旁','和金属有关'],['钱','钅','金字旁','和金属有关']];
+const ZH_PUNCT=[['我每天早上七点去学校','。','这是一句普通的陈述句，句末用句号「。」'],['你喜欢吃榴梿吗','？','句子里有「吗」，是在问问题，要用问号「？」'],['你叫什么名字','？','这是在问问题（什么），要用问号「？」'],['这里的风景真美啊','！','这句话表达很强的感受（赞叹），要用感叹号「！」'],['妈妈在厨房里煮饭','。','这是一句普通的陈述句，句末用句号「。」'],['小心，有车来了','！','这是提醒、表示着急的语气，要用感叹号「！」'],['你今天为什么迟到','？','这是在问问题（为什么），要用问号「？」'],['弟弟在花园里玩','。','这是一句普通的陈述句，句末用句号「。」'],['明天是星期几','？','这是在问问题（几），要用问号「？」'],['太好了，我们赢了','！','这句话表达非常开心的感受，要用感叹号「！」'],['爸爸每天开车去上班','。','这是一句普通的陈述句，句末用句号「。」'],['这只小狗好可爱呀','！','这句话表达很强的感受，要用感叹号「！」']];
+const ZH_FILL=[['小明考了一百分，心里很___。','高兴',['伤心','生气','害怕'],'考了一百分是好事，所以心里很高兴。'],['下大雨了，我出门要带___。','雨伞',['风筝','扇子','球拍'],'下雨要用雨伞挡雨。'],['天黑了，天上有很多___。','星星',['太阳','彩虹','小鸟'],'晚上天空里会看到星星。'],['弟弟肚子饿了，妈妈给他___。','面包',['铅笔','鞋子','雨伞'],'肚子饿要吃东西，面包是食物。'],['上课的时候，我们要___听讲。','专心',['大声','随便','生气'],'上课要专心听老师讲课。'],['小狗看见主人回家，高兴得___尾巴。','摇',['点','拍','踢'],'小狗开心时会摇尾巴。'],['我每天早上用___刷牙。','牙刷',['毛巾','梳子','筷子'],'刷牙要用牙刷。'],['冬天很冷，夏天很___。','热',['冷','凉','湿'],'冬天冷，夏天热，是相反的意思。'],['鸟儿在天空中___。','飞',['游','爬','跑'],'鸟儿有翅膀，在天空中飞。'],['鱼儿在水里___。','游',['飞','爬','走'],'鱼儿在水里游来游去。'],['弟弟不小心跌倒了，哭得很___。','伤心',['开心','快乐','得意'],'跌倒会痛，所以哭得很伤心。'],['我们要___花草树木。','爱护',['破坏','拔掉','踩坏'],'花草树木要好好爱护。']];
+const ZH_ABB=[['草地','绿油油',[]],['苹果','红通通',[]],['雪地','白茫茫',[]],['小猪','胖嘟嘟',['毛茸茸']],['小狗的毛','毛茸茸',['胖嘟嘟']],['阳光','暖洋洋',[]]];
+
+const ZH = {
+  pic(){ const c=R(ZH_PICS); const [s,t,e]=ZH_PY[c];
+    return {type:'看图选字',key:'p'+c,visual:e,prompt:'图中是什么？',options:opts(c,ZH_PICS),answer:c,
+      zh:`图中是「<b>${c}</b>」，读 ${py(s,t)}。`}; },
+  pinyin(){ const c=R(ZH_CHARS); const [s,t]=ZH_PY[c]; const ans=py(s,t);
+    return {type:'拼音',key:'y'+c,visual:`<span class="hz">${c}</span>`,prompt:`「${c}」的拼音是？`,options:shuffle([1,2,3,4].map(k=>py(s,k))),answer:ans,
+      zh:`「${c}」读 <b>${ans}</b>，是${TONE_NAME[t]}。四个声调：ā 第一声、á 第二声、ǎ 第三声、à 第四声。`}; },
+  antonym(){ const [a,b]=R(ZH_ANT); const flip=Math.random()<.5; const q=flip?b:a, ans=flip?a:b;
+    return {type:'反义词',key:'a'+q,prompt:`「${q}」的反义词是？`,options:opts(ans,ZH_ANT.flat().filter(x=>x!==q)),answer:ans,
+      zh:`「${q}」和「<b>${ans}</b>」意思相反，是一对反义词。`}; },
+  synonym(){ const g=R(ZH_SYN); const [q,ans]=shuffle(g);
+    return {type:'近义词',key:'s'+q,prompt:`「${q}」的近义词是？`,options:opts(ans,ZH_SYN.filter(x=>x!==g).flat()),answer:ans,
+      zh:`「${q}」和「<b>${ans}</b>」意思差不多，是近义词。`}; },
+  measure(){ const [n,mw,e,z]=R(ZH_MW); const pool=ZH_MW_ALL.filter(x=>x!==mw&&!(ZH_MW_OK[n]||[]).includes(x));
+    return {type:'量词',key:'m'+n,visual:e,prompt:`一${B}${n}`,options:opts(mw,pool),answer:mw,
+      zh:`应该说「一<b>${mw}</b>${n}」。量词「${mw}」${z}。`}; },
+  radical(){ const [c,r,name,m]=R(ZH_RAD);
+    return {type:'部首',key:'r'+c,visual:`<span class="hz">${c}</span>`,prompt:`「${c}」的部首是？`,options:opts(r,ZH_RAD.map(x=>x[1])),answer:r,
+      zh:`「${c}」的部首是「<b>${r}</b>」（${name}）。${name}的字大多${m}。`}; },
+  punct(){ const [s,p,z]=R(ZH_PUNCT);
+    return {type:'标点符号',key:'n'+s,prompt:`${s}${B}`,options:['。','？','！','，'],answer:p,zh:z}; },
+  fill(){ const [s,a,w,z]=R(ZH_FILL);
+    return {type:'选词填空',key:'f'+s,prompt:s.replace('___',B),options:shuffle([a,...w]),answer:a,zh:`答案是「<b>${a}</b>」。${z}`}; },
+  abb(){ const [ctx,a,ex]=R(ZH_ABB); const pool=ZH_ABB.map(x=>x[1]).filter(x=>x!==a&&!ex.includes(x));
+    return {type:'ABB 词语',key:'b'+ctx,prompt:`${B}的${ctx}`,options:opts(a,pool),answer:a,
+      zh:`应该是「<b>${a}</b>的${ctx}」。绿油油 → 草地，红通通 → 苹果，白茫茫 → 雪地，胖嘟嘟 → 小猪，毛茸茸 → 小狗的毛，暖洋洋 → 阳光。`}; },
+  read(){ const names=['小明','小华','美玲','志强','丽丽','家豪']; const n=R(names); const age=R([7,8]); const Z=['零','一','二','三','四','五','六','七','八','九','十'];
+    const pets=[['猫','只'],['兔子','只'],['金鱼','条'],['小鸟','只'],['乌龟','只']]; const [pet,mw]=R(pets);
+    const pns=['咪咪','小白','乐乐','球球','花花','豆豆']; const pn=R(pns);
+    const fr=['苹果','香蕉','榴梿','西瓜','芒果','红毛丹']; const f=R(fr);
+    const hb=['画画','游泳','看书','唱歌','打羽毛球','骑脚车']; const h=R(hb);
+    const passage=`我叫${n}，今年${Z[age]}岁。我家有一${mw}${pet}，它叫${pn}。我最喜欢吃${f}。我的爱好是${h}。`;
+    const Qs=[[`${n}今年几岁？`,`${Z[age]}岁`,[6,9,age===7?8:7].map(x=>`${Z[x]}岁`),`短文说「今年${Z[age]}岁」。`],
+      [`${n}家里有什么宠物？`,`${pet}`,shuffle(pets.filter(p=>p[0]!==pet)).slice(0,3).map(p=>p[0]),`短文说「我家有一${mw}${pet}」。`],
+      [`宠物叫什么名字？`,pn,shuffle(pns.filter(x=>x!==pn)).slice(0,3),`短文说「它叫${pn}」。`],
+      [`${n}最喜欢吃什么？`,f,shuffle(fr.filter(x=>x!==f)).slice(0,3),`短文说「我最喜欢吃${f}」。`],
+      [`${n}的爱好是什么？`,h,shuffle(hb.filter(x=>x!==h)).slice(0,3),`短文说「我的爱好是${h}」。`]];
+    const [q,a,w,z]=R(Qs);
+    return {type:'阅读理解',key:'rd'+q,passage,prompt:q,options:shuffle([a,...w]),answer:a,
+      zh:`${z}所以答案是「<b>${a}</b>」。做阅读题时，先回到短文里找答案。`}; },
+};
+
+// =====================================================================
+// 科学
+// =====================================================================
+const SC_LIVE=[['猫','🐱'],['树','🌳'],['花','🌸'],['小鸟','🐦'],['鱼','🐟'],['蚂蚁','🐜'],['小朋友','🧒'],['青蛙','🐸'],['蝴蝶','🦋'],['仙人掌','🌵']];
+const SC_NON=[['石头','🪨'],['书','📕'],['汽车','🚗'],['球','⚽'],['椅子','🪑'],['风筝','🪁'],['铅笔','✏️'],['机器人','🤖'],['时钟','⏰'],['玩具熊','🧸']];
+const SC_SENSE=[['眼睛','看东西','👀'],['耳朵','听声音','👂'],['鼻子','闻气味','👃'],['舌头','尝味道','👅'],['皮肤','感觉冷热、软硬','✋']];
+const SC_SENSE_SC=[['看见天上的彩虹','眼睛'],['听到闹钟响','耳朵'],['闻到榴梿的味道','鼻子'],['尝到糖果是甜的','舌头'],['摸到冰块很冷','皮肤'],['听到小鸟在唱歌','耳朵'],['闻到妈妈煮的咖喱很香','鼻子'],['看见红绿灯变红了','眼睛'],['尝到柠檬是酸的','舌头'],['摸到小猫的毛很软','皮肤']];
+const SC_MOVE=[['鸟','🐦','飞',['走','跳']],['蝴蝶','🦋','飞',['爬','走']],['鱼','🐟','游',['跳']],['蛇','🐍','爬',['游']],['蜗牛','🐌','爬',[]],['袋鼠','🦘','跳',['走','游']],['马','🐴','走',['跳']]];
+const SC_FOOD={草食动物:[['牛','🐮'],['羊','🐐'],['兔子','🐰'],['马','🐴'],['大象','🐘'],['长颈鹿','🦒']],肉食动物:[['老虎','🐯'],['狮子','🦁'],['老鹰','🦅'],['鳄鱼','🐊']],杂食动物:[['鸡','🐔'],['熊','🐻'],['猪','🐷']]};
+const SC_FOOD_ZH='草食动物只吃植物；肉食动物吃其他动物；杂食动物植物和动物都吃。';
+const SC_REP={'生蛋（卵生）':[['鸡','🐔'],['鸭子','🦆'],['乌龟','🐢'],['鳄鱼','🐊'],['青蛙','🐸'],['鸟','🐦'],['蝴蝶','🦋']],'生下小宝宝（胎生）':[['猫','🐱'],['狗','🐶'],['牛','🐮'],['羊','🐐'],['大象','🐘'],['猴子','🐒'],['兔子','🐰'],['马','🐴'],['鲸鱼','🐋']]};
+const SC_ATT=[['铁钉','铁'],['回形针','铁'],['别针','铁'],['铁螺丝','铁'],['铁片','铁']];
+const SC_NOATT=[['橡皮擦','橡胶'],['纸张','纸'],['塑料尺','塑料'],['木块','木头'],['玻璃杯','玻璃'],['布','布'],['铝罐','铝'],['橡皮筋','橡胶']];
+const SC_ABS=['毛巾','海绵','纸巾','棉花','布'], SC_NOABS=['塑料袋','玻璃','铁汤匙','铝箔','雨衣','塑料杯'];
+
+function scBank(type,key,prompt,ans,wrong,zh,extra){ return {type,key,prompt,options:shuffle([ans,...wrong]),answer:ans,zh,...(extra||{})}; }
+const SC = {
+  living(){ const live=Math.random()<.5; const [n,e]=R(live?SC_LIVE:SC_NON);
+    const moves=['汽车','机器人','时钟','风筝'].includes(n);
+    return {type:'生物与非生物',key:'l'+n,visual:e,prompt:`「${n}」是生物还是非生物？`,options:['生物','非生物'],answer:live?'生物':'非生物',
+      zh: live?`「${n}」是<b>生物</b>。生物会呼吸、需要食物和水、会成长，也会繁殖。`
+        :`「${n}」是<b>非生物</b>。${moves?'它虽然会动，但':'它'}不会呼吸、不需要食物，也不会长大。`}; },
+  senses(){ if(Math.random()<.5){ const [s,o]=R(SC_SENSE_SC); const [,v]=SC_SENSE.find(x=>x[0]===o);
+      return {type:'五官',key:'ss'+s,prompt:`${s}，是用哪一个感官？`,options:opts(o,SC_SENSE.map(x=>x[0])),answer:o,
+        zh:`${s}，是用<b>${o}</b>。我们用${o}来${v}。`}; }
+    const [o,v,e]=R(SC_SENSE);
+    return {type:'五官',key:'so'+o,visual:e,prompt:`我们用什么来${v}？`,options:opts(o,SC_SENSE.map(x=>x[0])),answer:o,
+      zh:`我们用<b>${o}</b>来${v}。五种感官：眼睛（看）、耳朵（听）、鼻子（闻）、舌头（尝）、皮肤（摸）。`}; },
+  animalMove(){ const [n,e,a,ex]=R(SC_MOVE); const pool=['飞','游','爬','跳','走'].filter(x=>x!==a&&!ex.includes(x));
+    return {type:'动物怎样移动',key:'mv'+n,visual:e,prompt:`${n}主要用什么方式移动？`,options:shuffle([a,...shuffle(pool).slice(0,3)]),answer:a,
+      zh:`${n}主要是<b>${a}</b>。动物移动的方式有：飞、游、爬、跳、走。`}; },
+  animalFood(){ const cats=Object.keys(SC_FOOD); const c=R(cats);
+    if(Math.random()<.5){ const [n,e]=R(SC_FOOD[c]);
+      return {type:'动物的食物',key:'af'+n,visual:e,prompt:`${n}是哪一类动物？`,options:cats,answer:c,zh:`${n}是<b>${c}</b>。${SC_FOOD_ZH}`}; }
+    const [n,e]=R(SC_FOOD[c]); const others=shuffle(cats.filter(x=>x!==c).flatMap(x=>SC_FOOD[x])).slice(0,3).map(x=>x[0]);
+    return {type:'动物的食物',key:'ag'+c+n,prompt:`以下哪一种是${c}？`,options:shuffle([n,...others]),answer:n,zh:`<b>${n}</b>是${c}。${SC_FOOD_ZH}`}; },
+  reproduce(){ const cats=Object.keys(SC_REP); const c=R(cats); const [n,e]=R(SC_REP[c]);
+    return {type:'动物的繁殖',key:'rp'+n,visual:e,prompt:`${n}怎样繁殖（生下一代）？`,options:cats,answer:c,
+      zh:`${n}是<b>${c}</b>的。${n==='鲸鱼'?'鲸鱼虽然住在海里，但它不是鱼，是直接生小宝宝的。':''}${c.startsWith('生蛋')?'卵生动物：鸡、鸭、鸟、乌龟、青蛙等。':'胎生动物：猫、狗、牛、羊、大象等。'}`}; },
+  plantNeeds(){ const a=R(['水','阳光','空气']);
+    return scBank('植物的需要','pn'+a,'以下哪一项是植物生长的基本需要？',a,shuffle(['糖','牛奶','盐','音乐','玩具']).slice(0,3),`植物生长需要<b>水、阳光和空气</b>。答案是「${a}」。`); },
+  plantScen(){ const T=[['把盆栽放在黑暗的柜子里很多天，植物会怎样？','叶子变黄，长得不好',['长得更快','开更多花','没有改变'],'植物需要阳光。没有阳光，叶子会变黄，长得不好。'],['很多天不给植物浇水，植物会怎样？','枯萎',['长得更高','变得更绿','结更多果实'],'植物需要水。没有水，植物会枯萎。'],['把植物放进密封的塑料袋里很多天，植物会怎样？','长得不好，慢慢枯萎',['长得更快','开出更多花','变得更绿'],'植物需要空气。没有空气流通，植物会长不好。']];
+    const [q,a,w,z]=R(T); return scBank('植物的需要','ps'+q,q,a,w,z,{wide:true}); },
+  animalNeeds(){ const a=R(['食物','水','空气','住所']);
+    return scBank('动物的需要','an'+a,'以下哪一项是动物生存的基本需要？',a,shuffle(['玩具','电视','钱','衣服','手机']).slice(0,3),`动物需要<b>食物、水、空气和住所</b>才能生存。答案是「${a}」。`); },
+  plantParts(){ const T=[['植物的哪一部分从土壤吸收水分？','根','根长在土里，吸收水分和养分，也把植物固定在土里。'],['植物的哪一部分支撑植物，把水运送到叶子？','茎','茎支撑植物，把根吸收的水运送到叶子。'],['植物的哪一部分通常是绿色、扁扁的？','叶','叶子通常是绿色、扁扁的，帮植物制造食物。'],['植物的哪一部分会变成果实？','花','花会慢慢变成果实。'],['种子藏在植物的哪一部分里面？','果实','果实里面有种子，种子可以长成新的植物。']];
+    const [q,a,z]=R(T); return {type:'植物的部分',key:'pp'+a,visual:'🌱',prompt:q,options:opts(a,['根','茎','叶','花','果实']),answer:a,zh:`答案是<b>${a}</b>。${z}`}; },
+  magnet(){ if(Math.random()<.5){ const [n,m]=R(SC_ATT);
+      return scBank('磁铁','ma'+n,'磁铁可以吸起以下哪一样东西？',n,shuffle(SC_NOATT).slice(0,3).map(x=>x[0]),`磁铁只会吸<b>铁</b>做的东西。<b>${n}</b>是${m}做的，所以会被吸起。`,{visual:'🧲'}); }
+    const [n,m]=R(SC_NOATT);
+    return scBank('磁铁','mn'+n,'磁铁<b>不能</b>吸起以下哪一样东西？',n,shuffle(SC_ATT).slice(0,3).map(x=>x[0]),`磁铁只会吸铁做的东西。<b>${n}</b>是${m}做的，${m==='铝'?'铝虽然是金属，但不是铁，':''}所以磁铁吸不起来。`,{visual:'🧲'}); },
+  magnetPoles(){ const T=[['磁铁的两端叫做什么？','磁极',['磁心','磁线','磁片'],'磁铁的两端叫磁极，分别是北极（N）和南极（S）。'],['两块磁铁的 N 极靠近 N 极，会怎样？','互相推开',['互相吸住','没有反应','变成铁'],'同极（N 和 N，或 S 和 S）会互相排斥（推开）。'],['两块磁铁的 S 极靠近 S 极，会怎样？','互相推开',['互相吸住','没有反应','变热'],'同极（N 和 N，或 S 和 S）会互相排斥（推开）。'],['两块磁铁的 N 极靠近 S 极，会怎样？','互相吸住',['互相推开','没有反应','变热'],'异极（N 和 S）会互相吸引（吸住）。'],['条形磁铁的哪个部位吸力最强？','两端（磁极）',['中间','每个地方都一样','没有吸力'],'磁铁两端（磁极）的吸力最强，中间最弱。']];
+    const [q,a,w,z]=R(T); return scBank('磁铁','mp'+q,q,a,w,z,{visual:'🧲'}); },
+  absorb(){ if(Math.random()<.5){ const n=R(SC_ABS);
+      return scBank('吸水性','ab'+n,'以下哪一样东西能吸水？',n,shuffle(SC_NOABS).slice(0,3),`<b>${n}</b>能吸水，所以可以用来擦干东西。塑料、玻璃、金属都不能吸水。`); }
+    const n=R(SC_NOABS);
+    return scBank('吸水性','ax'+n,'以下哪一样东西<b>不能</b>吸水？',n,shuffle(SC_ABS).slice(0,3),`<b>${n}</b>不能吸水，水会流走。雨衣、雨伞就是用不吸水的材料做的。`); },
+  soil(){ const T=[['哪一种土壤让水流过得最快？','沙土',['黏土','园土'],'沙土的颗粒大，空隙多，所以水流得最快。黏土的水流得最慢。'],['哪一种土壤让水流过得最慢？','黏土',['沙土','园土'],'黏土的颗粒很小，空隙少，水很难流过，所以最慢。'],['哪一种土壤最适合种植植物？','园土',['沙土','黏土'],'园土含有很多腐殖质（腐烂的叶子等），养分多，最适合种植物。'],['把土壤放进水里，看到有气泡冒出来，表示土壤里有什么？','空气',['糖','盐','油'],'冒出的气泡说明土壤里有空气。'],['把土壤加热，杯子上出现小水珠，表示土壤里有什么？','水',['糖','盐','油'],'加热后出现水珠，说明土壤里含有水分。']];
+    const [q,a,w,z]=R(T); return scBank('土壤','so'+q,q,a,w,z); },
+  growth(){ const T=[['以下哪一项表示我们在长大？','身高增加',['头发变短','衣服变旧','鞋子变脏'],'我们长大时，身高和体重都会增加。'],['婴儿长大后，会先成为？','儿童',['老人','成人','少年'],'人的成长顺序：婴儿 → 儿童 → 少年 → 成人 → 老人。'],['儿童长大后，会成为？','少年',['婴儿','老人','儿童'],'人的成长顺序：婴儿 → 儿童 → 少年 → 成人 → 老人。'],['我们长大时，体重会怎样？','增加',['减少','不变','消失'],'我们长大时，身高和体重都会增加。'],['为了健康成长，我们应该多吃什么？','蔬菜和水果',['糖果','汽水','炸薯片'],'蔬菜和水果有很多营养，帮助我们健康成长。']];
+    const [q,a,w,z]=R(T); return scBank('人类的成长','gr'+q,q,a,w,z,{visual:'🧒'}); },
+  labRules(){ const T=[['在科学室里，我们应该怎样做？','听从老师的指示',['在科学室里奔跑','偷偷吃东西','随便碰器材'],'科学室里有很多器材和化学品，要听老师的指示才安全。'],['不小心打破了玻璃器材，应该怎样做？','马上告诉老师',['用手捡起来','把它藏起来','不理它'],'碎玻璃很危险，不要用手捡，要马上告诉老师。'],['进入科学室之前，我们要？','得到老师的允许',['自己先跑进去','在门口玩','大声吵闹'],'要得到老师的允许才可以进入科学室。'],['做完实验后，我们要？','收拾器材，然后洗手',['马上跑出去','把东西丢在桌上','在科学室吃东西'],'做完实验要收拾干净，并且洗手。']];
+    const [q,a,w,z]=R(T); return scBank('科学室规则','lb'+q,q,a,w,z,{wide:true}); },
+  lifeCycle(){ const C=[['青蛙','🐸',['卵','蝌蚪','幼蛙','青蛙']],['蝴蝶','🦋',['卵','幼虫（毛毛虫）','蛹','蝴蝶']],['鸡','🐔',['蛋','小鸡','鸡']]];
+    const [n,e,st]=R(C); const i=Math.floor(Math.random()*(st.length-1)); const ans=st[i+1];
+    const pool=[...new Set([...st,'蝌蚪','蛹','小鸡','幼虫（毛毛虫）'])].filter(x=>x!==st[i]);
+    return {type:'生命周期',key:'lc'+n+i,visual:e,prompt:`${n}的生命周期中，「${st[i]}」的下一个阶段是？`,options:opts(ans,pool),answer:ans,
+      zh:`${n}的生命周期：${st.join(' → ')}。所以「${st[i]}」之后是「<b>${ans}</b>」。`}; },
+};
+
+// =====================================================================
+// 数学
+// =====================================================================
+const ZN=['零','一','二','三','四','五','六','七','八','九','十'];
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function nOpts(ans,cands,fmt=String){ const s=new Set([ans]); for(const c of shuffle(cands)) if(c>=0&&s.size<4&&Number.isFinite(c)) s.add(c);
+  let d=1; while(s.size<4){ s.add(ans+d); if(s.size<4&&ans-d>=0) s.add(ans-d); d++; } return shuffle([...s]).map(fmt); }
+function cols(n){ return {h:Math.floor(n/100)%10,t:Math.floor(n/10)%10,o:n%10}; }
+function addExplain(a,b){ const A=cols(a),Bc=cols(b); const c1=A.o+Bc.o>=10, c2=A.t+Bc.t+(c1?1:0)>=10;
+  let s=`${a} + ${b} = <b>${a+b}</b>。先加个位：${A.o} + ${Bc.o} = ${A.o+Bc.o}${c1?'，满十要进 1 到十位':''}。再加十位${c1?'（记得加上进位的 1）':''}`;
+  if(a>=100||b>=100||a+b>=100) s+=`，最后加百位${c2?'（十位满十，要进 1 到百位）':''}`; return s+'。'; }
+function subExplain(a,b){ const A=cols(a),Bc=cols(b); const b1=A.o<Bc.o;
+  return `${a} − ${b} = <b>${a-b}</b>。先减个位${b1?`：${A.o} 不够减 ${Bc.o}，要向十位借 1，变成 ${A.o+10} − ${Bc.o} = ${A.o+10-Bc.o}`:`：${A.o} − ${Bc.o} = ${A.o-Bc.o}`}，再减十位${a>=100?'，最后减百位':''}。可以用加法检查：${a-b} + ${b} = ${a}。`; }
+function clockSVG(h,m){ let t='',n='';
+  for(let i=0;i<60;i++){ const a=i*6*Math.PI/180, r1=i%5?44:40; t+=`<line x1="${(50+47*Math.sin(a)).toFixed(1)}" y1="${(50-47*Math.cos(a)).toFixed(1)}" x2="${(50+r1*Math.sin(a)).toFixed(1)}" y2="${(50-r1*Math.cos(a)).toFixed(1)}" stroke="var(--muted)" stroke-width="${i%5?0.6:1.4}"/>`; }
+  for(let i=1;i<=12;i++){ const a=i*30*Math.PI/180; n+=`<text x="${(50+33*Math.sin(a)).toFixed(1)}" y="${(50-33*Math.cos(a)+3.6).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="var(--ink)" font-family="var(--body)">${i}</text>`; }
+  const ha=((h%12)+m/60)*30*Math.PI/180, ma=m*6*Math.PI/180;
+  return `<svg class="fig" viewBox="0 0 100 100" width="160" height="160" role="img" aria-label="时钟"><circle cx="50" cy="50" r="48" fill="var(--btn)" stroke="var(--ink)" stroke-width="2"/>${t}${n}<line x1="50" y1="50" x2="${(50+20*Math.sin(ha)).toFixed(1)}" y2="${(50-20*Math.cos(ha)).toFixed(1)}" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="${(50+36*Math.sin(ma)).toFixed(1)}" y2="${(50-36*Math.cos(ma)).toFixed(1)}" stroke="var(--hard)" stroke-width="2.5" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="var(--ink)"/></svg>`; }
+function fracSVG(k,d){ const w=200/d; let r='';
+  for(let i=0;i<d;i++) r+=`<rect x="${4+i*w}" y="4" width="${w}" height="52" fill="${i<k?'var(--pencil)':'var(--btn)'}" stroke="var(--ink)" stroke-width="2"/>`;
+  return `<svg class="fig" viewBox="0 0 208 60" width="240" height="70" role="img" aria-label="分数图">${r}</svg>`; }
+const SHAPES={
+  '圆形':['<circle cx="60" cy="50" r="42"/>','没有边，也没有角'],
+  '三角形':['<polygon points="60,8 108,92 12,92"/>','有 3 条边和 3 个角'],
+  '正方形':['<rect x="18" y="8" width="84" height="84"/>','有 4 条边，4 条边一样长'],
+  '长方形':['<rect x="4" y="25" width="112" height="56"/>','有 4 条边，对边一样长（两条长、两条短）']};
+const shapeSVG=n=>`<svg class="fig" viewBox="0 0 120 100" width="150" height="125" role="img" aria-label="图形"><g fill="var(--pencil)" stroke="var(--ink)" stroke-width="3">${SHAPES[n][0]}</g></svg>`;
+const SHAPES3D=[['立方体','🎲','6 个面都是正方形'],['球体','⚽','圆圆的，可以向四面八方滚动'],['圆柱体','🥫','上下两个面是圆形，可以滚动'],['长方体','📦','6 个面，大多是长方形']];
+const COUNT_EMO=['🍎','⭐','🐤','🍬','🌸','🎈','🐟','🍓'];
+const MNAMES=['阿明','美玲','志强','丽丽','小华','家豪','阿里','西蒂'];
+const fmtRM=x=>'RM'+x;
+
+const MA = {
+  add(level){ let a,b; if(level==='easy'){a=ri(10,80);b=ri(1,99-a);} else {a=ri(100,700);b=ri(15,999-a);}
+    const s=a+b; return {type:'加法',key:'ad'+a+'+'+b,prompt:`${a} + ${b} = ${B}`,options:nOpts(s,[s+10,s-10,s+1,s-1,s+100,s-100]),answer:String(s),zh:addExplain(a,b)}; },
+  sub(level){ let a,b; if(level==='easy'){a=ri(20,99);b=ri(1,a-5);} else {a=ri(150,999);b=ri(15,a-20);}
+    const s=a-b; return {type:'减法',key:'sb'+a+'-'+b,prompt:`${a} − ${b} = ${B}`,options:nOpts(s,[s+10,s-10,s+1,s-1,a+b]),answer:String(s),zh:subExplain(a,b)}; },
+  compare(level){ const max=level==='easy'?99:999; const set=new Set(); while(set.size<4) set.add(ri(level==='easy'?10:100,max)); const arr=[...set]; const big=Math.random()<.5;
+    const ans=big?Math.max(...arr):Math.min(...arr);
+    return {type:'比较数字',key:'cp'+arr.join(),prompt:`哪一个数字最${big?'大':'小'}？`,options:shuffle(arr).map(String),answer:String(ans),
+      zh:`先比较${max>99?'百位，百位一样再比较十位，再比较个位':'十位，十位一样再比较个位'}。最${big?'大':'小'}的数字是 <b>${ans}</b>。`}; },
+  pattern(level){ const step=level==='easy'?R([2,5,10]):R([2,3,4,5,10,100]); const down=level!=='easy'&&Math.random()<.4;
+    let st=level==='easy'?step*ri(0,5):ri(1,50)*(step===100?1:1); if(step===100) st=ri(1,4)*100; if(down) st+=step*5;
+    const seq=[0,1,2,3,4].map(i=>down?st-step*i:st+step*i); const k=ri(1,4); const ans=seq[k];
+    const shown=seq.map((x,i)=>i===k?B:x).join(', ');
+    return {type:'数字规律',key:'pt'+seq.join(),prompt:shown,options:nOpts(ans,[ans+1,ans-1,ans+step,ans-step,ans+10]),answer:String(ans),
+      zh:`这组数字每次${down?'减':'加'} ${step}：${seq.join(', ')}。所以空格是 <b>${ans}</b>。`}; },
+  shape(){ const n=R(Object.keys(SHAPES));
+    return {type:'图形',key:'sh'+n,visual:shapeSVG(n),prompt:'这是什么图形？',options:shuffle(Object.keys(SHAPES)),answer:n,zh:`这是<b>${n}</b>，它${SHAPES[n][1]}。`}; },
+  shapeProp(){ const T=[['三角形','边',3],['三角形','角',3],['正方形','边',4],['正方形','角',4],['长方形','边',4],['长方形','角',4],['圆形','角',0]]; const [n,p,v]=R(T);
+    return {type:'图形',key:'sp'+n+p,visual:shapeSVG(n),prompt:`${n}有几个${p}？`,options:nOpts(v,[0,3,4,5,2]),answer:String(v),zh:`${n}${SHAPES[n][1]}，所以有 <b>${v}</b> 个${p}。`}; },
+  shape3d(){ const [n,e,z]=R(SHAPES3D);
+    return {type:'立体图形',key:'s3'+n,visual:e,prompt:'这个东西像哪一种立体图形？',options:shuffle([...SHAPES3D.map(x=>x[0])]),answer:n,zh:`它像<b>${n}</b>：${z}。`}; },
+  count(){ const n=ri(6,18), e=R(COUNT_EMO);
+    return {type:'数一数',key:'ct'+n+e,visual:`<span class="count-grid">${e.repeat(n)}</span>`,prompt:'一共有几个？',options:nOpts(n,[n+1,n-1,n+2,n-2]),answer:String(n),
+      zh:`一个一个数，或者 5 个 5 个数：一共有 <b>${n}</b> 个。`}; },
+  money(level){ if(level==='easy'){ const notes=[]; const k=ri(2,4); for(let i=0;i<k;i++) notes.push(R([1,1,5,5,10,10,20,50])); notes.sort((a,b)=>b-a); const s=notes.reduce((a,b)=>a+b,0);
+      return {type:'钱币',key:'mo'+notes.join(),visual:`<span class="notes">${notes.map(x=>`<i>RM${x}</i>`).join('')}</span>`,prompt:'一共有多少钱？',options:nOpts(s,[s+1,s-1,s+5,s-5,s+10]).map(x=>'RM'+x),answer:'RM'+s,
+        zh:`把钱加起来：${notes.map(x=>'RM'+x).join(' + ')} = <b>RM${s}</b>。`}; }
+    const c=[ri(1,4)*10,R([5,10,20,50])]; const s=c[0]+c[1];
+    if(level==='medium') return {type:'钱币',key:'ms'+c.join(),visual:`<span class="notes">${c.map(x=>`<i class="coin">${x} sen</i>`).join('')}</span>`,prompt:'一共有多少 sen？',options:nOpts(s,[s+5,s-5,s+10,s-10]).map(x=>x+' sen'),answer:s+' sen',
+        zh:`${c[0]} sen + ${c[1]} sen = <b>${s} sen</b>。记住：RM1 = 100 sen。`};
+    const have=R([10,20,50,100]); const price=ri(Math.floor(have*0.2),have-1); const ch=have-price; const who=R(MNAMES);
+    return {type:'钱币应用题',key:'mc'+have+price,prompt:`${who}有 RM${have}，买了一本 RM${price} 的故事书。${who}还剩多少钱？`,options:nOpts(ch,[ch+10,ch-10,ch+1,ch-1,have+price]).map(fmtRM),answer:'RM'+ch,
+      zh:`还剩的钱要用减法：RM${have} − RM${price} = <b>RM${ch}</b>。`}; },
+  mult(level){ const t=level==='medium'?R([2,5,10]):R([2,3,4,5,10]); const b=ri(1,10); const s=t*b;
+    return {type:'乘法',key:'mu'+t+'x'+b,prompt:`${t} × ${b} = ${B}`,options:nOpts(s,[s+t,s-t,t+b,s+1,s-1]),answer:String(s),
+      zh:`${t} × ${b} 就是 ${b} 个 ${t} 相加${b<=5?'：'+Array(b).fill(t).join(' + '):''}，答案是 <b>${s}</b>。背一背 ${t} 的乘法表：${[1,2,3,4,5,6,7,8,9,10].map(i=>t*i).join(', ')}。`}; },
+  div(){ const d=R([2,3,4,5,10]), q=ri(1,10), n=d*q;
+    return {type:'除法',key:'dv'+n+'/'+d,prompt:`${n} ÷ ${d} = ${B}`,options:nOpts(q,[q+1,q-1,q+2,n-d,d]),answer:String(q),
+      zh:`${n} ÷ ${d}：想一想 ${d} × 几 = ${n}？因为 ${d} × ${q} = ${n}，所以答案是 <b>${q}</b>。`}; },
+  place(){ const n=ri(100,999); const {h,t,o}=cols(n);
+    if(Math.random()<.5){ const which=R([['百位',h],['十位',t],['个位',o]]);
+      return {type:'位值',key:'pv'+n+which[0],prompt:`${n} 的<b>${which[0]}</b>数字是？`,options:opts(String(which[1]),['0','1','2','3','4','5','6','7','8','9',String(h),String(t),String(o)]),answer:String(which[1]),
+        zh:`${n}：百位是 ${h}，十位是 ${t}，个位是 ${o}。所以${which[0]}数字是 <b>${which[1]}</b>。`}; }
+    return {type:'位值',key:'pw'+n,prompt:`${h} 个百、${t} 个十、${o} 个一，是多少？`,options:nOpts(n,[o*100+t*10+h,h*100+o*10+t,h*10+t+o,n+10]),answer:String(n),
+      zh:`${h} 个百 = ${h*100}，${t} 个十 = ${t*10}，${o} 个一 = ${o}。${h*100} + ${t*10} + ${o} = <b>${n}</b>。`}; },
+  clock(){ const h=ri(1,12), m=R([0,30]); const f=(H,M)=>`${H}:${String(M).padStart(2,'0')}`; const ans=f(h,m);
+    const c=new Set([ans,f(h,m?0:30),f(h%12+1,m),f((h+10)%12+1,m)]); if(m===0) c.add(f(12,h*5%60)); else c.add(f(6,h*5%60||0));
+    const o=shuffle([...c].filter(x=>x!==ans)).slice(0,3);
+    return {type:'时间',key:'ck'+ans,visual:clockSVG(h,m),prompt:'时钟显示几点？',options:shuffle([ans,...o]),answer:ans,
+      zh: m===0?`长针（红色）指着 12，短针指着 ${h}，所以是 <b>${h} 点整（${ans}）</b>。`
+               :`长针（红色）指着 6，是 30 分（半）。短针在 ${h} 和 ${h%12+1} 中间，所以是 <b>${h} 点半（${ans}）</b>。`}; },
+  fraction(){ const d=R([2,3,4]), k=ri(1,d-1); const ans=`${k}/${d}`;
+    const c=new Set([`${d-k}/${d}`,`${k}/${d+1}`,`${d}/${k}`,`1/${d===2?4:2}`,`${k}/${d-1||1}`]); c.delete(ans);
+    return {type:'分数',key:'fr'+ans,visual:fracSVG(k,d),prompt:'涂色部分是多少？',options:shuffle([ans,...shuffle([...c].filter(x=>!/\/1$/.test(x)&&x!=='1/1')).slice(0,3)]),answer:ans,
+      zh:`图形平均分成 ${d} 份，涂了 ${k} 份，所以是 <b>${ans}</b>（${ZN[d]}分之${ZN[k]}）。`}; },
+  units(level){ const T=level==='medium'
+      ? [['1 米','厘米',100],['1 公斤','克',1000],['1 公升','毫升',1000],['1 小时','分钟',60],['1 天','小时',24],['1 星期','天',7],['1 年','个月',12]]
+      : (()=>{ const k=ri(2,5), j=ri(2,4); return [[`${k} 米`,'厘米',k*100],[`${j} 公斤`,'克',j*1000],[`${j} 公升`,'毫升',j*1000],[`${k*100} 厘米`,'米',k],[`${k} 星期`,'天',k*7],[`${j} 小时`,'分钟',j*60]]; })();
+    const [q,u,v]=R(T);
+    const rule={厘米:'1 米 = 100 厘米',克:'1 公斤 = 1000 克',毫升:'1 公升 = 1000 毫升',分钟:'1 小时 = 60 分钟',小时:'1 天 = 24 小时',天:'1 星期 = 7 天',个月:'1 年 = 12 个月',米:'100 厘米 = 1 米'}[u];
+    return {type:'单位换算',key:'un'+q+u,prompt:`${q} = ${B} ${u}`,options:nOpts(v,[v*10,Math.round(v/10),v+10,v*100,100,1000,60]),answer:String(v),
+      zh:`记住：${rule}。所以 ${q} = <b>${v} ${u}</b>。`}; },
+  round(){ const n=ri(11,999); if(n%10===0) return MA.round(); const r=Math.round(n/10)*10, o=n%10;
+    return {type:'取近似值',key:'rd'+n,prompt:`${n} 取近似值到<b>十位</b>是？`,options:nOpts(r,[r-10,r+10,Math.floor(n/10)*10===r?r+10:r-10,Math.round(n/100)*100]),answer:String(r),
+      zh:`看个位数字：${o}。${o>=5?`${o} ≥ 5，要进 1（十位加 1）`:`${o} < 5，舍去（十位不变）`}，所以 ${n} ≈ <b>${r}</b>。`}; },
+  missing(){ if(Math.random()<.5){ const a=ri(10,90), b=ri(5,90); const c=a+b;
+      return {type:'找出缺少的数',key:'mi'+a+b,prompt:`${B} + ${b} = ${c}`,options:nOpts(a,[a+10,a-10,c+b,a+1]),answer:String(a),
+        zh:`用减法找出答案：${c} − ${b} = <b>${a}</b>。检查：${a} + ${b} = ${c}。`}; }
+    const a=ri(40,150), b=ri(5,a-5); const c=a-b;
+    return {type:'找出缺少的数',key:'mj'+a+b,prompt:`${a} − ${B} = ${c}`,options:nOpts(b,[b+10,b-10,a+c,b+1]),answer:String(b),
+      zh:`用减法找出答案：${a} − ${c} = <b>${b}</b>。检查：${a} − ${b} = ${c}。`}; },
+  word(){ const who=R(MNAMES), kind=R(['add','sub','mul','div']);
+    if(kind==='add'){ const a=ri(20,300), b=ri(10,300); const s=a+b;
+      return {type:'应用题',key:'wa'+a+b,prompt:`${who}有 ${a} 颗弹珠，哥哥再给他 ${b} 颗。${who}现在一共有几颗弹珠？`,wide:false,options:nOpts(s,[s+10,s-10,Math.abs(a-b),s+1]),answer:String(s),
+        zh:`「一共」要用加法：${a} + ${b} = <b>${s}</b>。`}; }
+    if(kind==='sub'){ const a=ri(50,500), b=ri(10,a-10); const s=a-b;
+      return {type:'应用题',key:'ws'+a+b,prompt:`篮子里有 ${a} 个红毛丹，卖掉了 ${b} 个。还剩几个？`,options:nOpts(s,[s+10,s-10,a+b,s+1]),answer:String(s),
+        zh:`「还剩」要用减法：${a} − ${b} = <b>${s}</b>。`}; }
+    if(kind==='mul'){ const a=R([2,3,4,5,10]), b=ri(2,9); const s=a*b;
+      return {type:'应用题',key:'wm'+a+b,prompt:`每盒有 ${a} 支铅笔，${b} 盒一共有几支铅笔？`,options:nOpts(s,[a+b,s+a,s-a,s+1]),answer:String(s),
+        zh:`${b} 盒，每盒 ${a} 支，就是 ${b} 个 ${a}，用乘法：${a} × ${b} = <b>${s}</b>。`}; }
+    const d=R([2,3,4,5,10]), q=ri(2,9), n=d*q;
+    return {type:'应用题',key:'wd'+n+d,prompt:`${n} 颗糖果平均分给 ${d} 个小朋友，每人得几颗？`,options:nOpts(q,[q+1,q-1,n-d,n+d]),answer:String(q),
+      zh:`「平均分」要用除法：${n} ÷ ${d} = <b>${q}</b>（因为 ${d} × ${q} = ${n}）。`}; },
+  duration(){ const h=ri(1,9), d=ri(1,3); const e=h+d;
+    return {type:'时间',key:'du'+h+d,prompt:`电影在下午 ${h} 点开始，播了 ${d} 小时。电影几点结束？`,options:nOpts(e,[e+1,e-1,h,h+d+2]).map(x=>`${x} 点`),answer:`${e} 点`,
+      zh:`${h} 点再过 ${d} 小时：${h} + ${d} = ${e}，所以是下午 <b>${e} 点</b>结束。`}; },
+};
+
+function misspell(w){ const bad=new Set(); let g=0;
+  const mut=[s=>{const i=1+Math.floor(Math.random()*(s.length-2));return s.slice(0,i)+s[i+1]+s[i]+s.slice(i+2)},
+             s=>{const i=1+Math.floor(Math.random()*(s.length-1));return s.slice(0,i)+s.slice(i+1)},
+             s=>{const i=1+Math.floor(Math.random()*(s.length-1));return s.slice(0,i)+s[i]+s.slice(i)},
+             s=>s.replace(/[aeiou]/,v=>R('aeiou'.replace(v,'').split('')))];
+  while(bad.size<3&&g++<80){const m=R(mut)(w); if(m!==w&&m.length>2) bad.add(m);} return [...bad]; }
+
+
+const SUBJECTS={
+  en:{name:'English',sub:'英文',ic:'A',c:'var(--s-en)',lang:'en-GB',gens:EN,
+    ui:{praise:['Well done!','Great job!','Excellent!','Super!'],next:'Next →',done:'See my score'},
+    levels:{easy:['pictureWord','aAn','colour','countEasy','missingLetter','bodyPart','pictureWord','opposite'],
+      medium:['isAre','plural','preposition','opposite','daySeq','pronoun','haveHas','addWords','spelling','aAn'],
+      hard:['past','simplePresent','continuous','irregular','sentence','questionWord','story','spelling','monthSeq','plural','isAre']},
+    desc:{easy:'Pictures, colours, counting, a / an',medium:'is / are, plurals, in / on / under, he / she',hard:'Tenses, sentences, question words, reading'}},
+  bm:{name:'Bahasa Melayu',sub:'国文',ic:'B',c:'var(--s-bm)',lang:'ms-MY',gens:BM,
+    ui:{praise:['Bagus!','Syabas!','Hebat!','Betul!'],next:'Seterusnya →',done:'Lihat markah'},
+    levels:{easy:['gambar','warna','antonim','sukuKata','gambar'],
+      medium:['penjodoh','sendi','tanya','ganti','ejaan','antonim'],
+      hard:['kerja','penjodoh','tanya','faham','ejaan','sendi','ganti']},
+    desc:{easy:'Gambar, warna, antonim, suku kata',medium:'Penjodoh bilangan, kata sendi, kata tanya, ejaan',hard:'Kata kerja, pemahaman, penjodoh bilangan'}},
+  zh:{name:'华语',sub:'Bahasa Cina',ic:'华',c:'var(--s-zh)',lang:'zh-CN',gens:ZH,
+    ui:{praise:['答对了！','真棒！','太好了！','好厉害！'],next:'下一题 →',done:'看成绩'},
+    levels:{easy:['pic','pinyin','antonym','punct','pic'],
+      medium:['measure','radical','pinyin','antonym','fill','punct'],
+      hard:['synonym','measure','radical','fill','abb','read']},
+    desc:{easy:'看图选字、拼音、反义词、标点',medium:'量词、部首、拼音、选词填空',hard:'近义词、ABB 词语、阅读理解'}},
+  sci:{name:'科学',sub:'Sains',ic:'科',c:'var(--s-sci)',lang:'zh-CN',gens:SC,
+    ui:{praise:['答对了！','真棒！','太好了！','好厉害！'],next:'下一题 →',done:'看成绩'},
+    levels:{easy:['living','senses','animalMove','plantNeeds','animalNeeds','labRules'],
+      medium:['animalFood','reproduce','plantParts','magnet','absorb','growth','senses'],
+      hard:['magnet','magnetPoles','absorb','soil','lifeCycle','animalFood','reproduce','plantScen']},
+    desc:{easy:'生物、五官、动物和植物的需要',medium:'动物的食物和繁殖、植物部分、磁铁、吸水性',hard:'磁极、土壤、生命周期、植物实验'}},
+  math:{name:'数学',sub:'Matematik',ic:'数',c:'var(--s-math)',lang:'zh-CN',gens:MA,
+    ui:{praise:['答对了！','真棒！','太好了！','好厉害！'],next:'下一题 →',done:'看成绩'},
+    levels:{easy:['add','sub','compare','pattern','shape','count','money'],
+      medium:['add','sub','mult','place','clock','fraction','units','money','shapeProp','shape3d'],
+      hard:['word','mult','div','round','units','missing','money','duration','pattern','word']},
+    desc:{easy:'100 以内加减、图形、数一数、钱币',medium:'1000 以内加减、乘法、时间、分数、单位',hard:'应用题、除法、近似值、单位换算'}},
+};
+const LV={easy:['Easy','简单','var(--easy)'],medium:['Medium','中等','var(--medium)'],hard:['Hard','困难','var(--hard)']};
+
+function build(subj,level,n){
+  const S_=SUBJECTS[subj], out=[], keys=new Set(); let bag=[], guard=0;
+  while(out.length<n && guard++<800){
+    if(!bag.length) bag=shuffle(S_.levels[level]);
+    const q=S_.gens[bag.pop()](level);
+    if(keys.has(q.key)) continue; keys.add(q.key); out.push(q);
+  }
+  return out;
+}
+
+function say(text,lang){ try{ const s=window.speechSynthesis; if(!s) return; s.cancel();
+  const t=text.replace(/<svg[\s\S]*?<\/svg>/g,' ').replace(/<[^>]+>/g,' ').replace(/_{2,}/g,lang.startsWith('zh')?'（空格）':' ... ').replace(/−/g,lang.startsWith('zh')?'减':' minus ').replace(/×/g,lang.startsWith('zh')?'乘':' times ').replace(/÷/g,lang.startsWith('zh')?'除以':' divided by ');
+  const u=new SpeechSynthesisUtterance(t); u.lang=lang; u.rate=.85; s.speak(u);}catch(e){} }
+const canSpeak='speechSynthesis' in window;
+
+const app=document.getElementById('app');
+let S={screen:'home',count:10,subject:'en'};
+
+function home(){
+  S.screen='home'; const cur=SUBJECTS[S.subject];
+  app.innerHTML=`
+    <p class="label">选择科目 · Pilih subjek</p>
+    <div class="subjects" role="group" aria-label="Subject">
+      ${Object.entries(SUBJECTS).map(([k,s])=>`<button class="subj" id="sj-${k}" style="--c:${s.c}" aria-pressed="${S.subject===k}" data-subj="${k}"><span class="ic">${s.ic}</span><b>${s.name}</b><span>${s.sub}</span></button>`).join('')}
+    </div>
+    <p class="label">选择难度 · Pilih tahap</p>
+    <div class="levels">
+      ${Object.entries(LV).map(([k,[en,zh,c]])=>`
+      <button class="level" style="--c:${c}" data-level="${k}" id="lv-${k}">
+        <span class="dot">${en[0]}</span>
+        <span><b>${en} · ${zh}</b><span>${cur.desc[k]}</span></span>
+      </button>`).join('')}
+    </div>
+    <div class="row"><span class="label" style="margin:0">题目数量</span>
+      <span class="seg" role="group" aria-label="Number of questions">
+        ${[10,20].map(n=>`<button id="cnt-${n}" aria-pressed="${S.count===n}" data-count="${n}">${n}</button>`).join('')}
+      </span></div>
+    <p class="muted" style="font-size:.95rem;margin:14px 0 0">每次开始都会出新的题目。答错时会马上显示正确答案和中文解释。开始后要做完全部题目才能离开。</p>`;
+  app.querySelectorAll('[data-subj]').forEach(b=>b.onclick=()=>{S.subject=b.dataset.subj;home();document.getElementById('sj-'+S.subject).focus({preventScroll:true});});
+  app.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>start(b.dataset.level));
+  app.querySelectorAll('[data-count]').forEach(b=>b.onclick=()=>{S.count=+b.dataset.count;home();});
+}
+
+function start(level){
+  S={...S,screen:'quiz',level,qs:build(S.subject,level,S.count),i:0,score:0,answered:false,wrong:[],streak:0};
+  question();
+}
+
+function question(){
+  const q=S.qs[S.i], L=LV[S.level], sj=SUBJECTS[S.subject];
+  app.innerHTML=`
+    <div class="topbar">
+      <span class="chip" style="--c:${sj.c}">${sj.name}</span>
+      <span class="chip" style="--c:${L[2]}">${L[1]}</span>
+      <div class="progress" aria-hidden="true"><i style="width:${S.i/S.qs.length*100}%"></i></div>
+      <span class="count">${S.i+1}/${S.qs.length}</span>
+    </div>
+    <p class="qtype">${q.type} ${canSpeak?`<button class="speak" id="speak" aria-label="Read aloud">🔊</button>`:''}</p>
+    ${q.passage?`<div class="passage">${esc(q.passage)}</div>`:''}
+    ${q.visual?`<div class="visual" aria-hidden="true">${q.visual}</div>`:''}
+    <p class="prompt">${q.prompt}</p>
+    ${q.hint?`<p class="hint">${esc(q.hint)}</p>`:''}
+    <div class="opts ${q.wide||q.options.some(o=>String(o).length>14)?'wide':''}">
+      ${q.options.map((o,k)=>`<button class="opt" id="opt-${k}" data-v="${esc(o)}">${esc(o)}</button>`).join('')}
+    </div>
+    <div id="fb"></div>
+    <div class="actions"></div>`;
+  app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b));
+  const sp=document.getElementById('speak'); if(sp) sp.onclick=()=>say((q.passage?q.passage+' ':'')+q.prompt,sj.lang);
+  S.answered=false;
+}
+
+function answer(btn){
+  if(S.answered) return; S.answered=true;
+  const q=S.qs[S.i], v=btn.dataset.v, ok=v===q.answer, sj=SUBJECTS[S.subject];
+  app.querySelectorAll('.opt').forEach(b=>{b.disabled=true; if(b.dataset.v===q.answer) b.classList.add('right');});
+  if(!ok) btn.classList.add('wrong');
+  if(ok){S.score++;S.streak++;} else {S.streak=0;S.wrong.push({q,v});}
+  document.getElementById('fb').innerHTML = ok
+    ? `<div class="fb ok"><h3>✓ ${R(sj.ui.praise)}</h3>${S.streak>=3?`<p>🔥 连续答对 ${S.streak} 题！</p>`:''}</div>`
+    : `<div class="fb no"><h3>✗ 答错了</h3>
+        <p>正确答案：<span class="ans">${esc(q.answer)}</span></p>
+        <p>${q.zh}</p></div>`;
+  const last=S.i===S.qs.length-1;
+  document.querySelector('.actions').innerHTML=`<button class="btn primary" id="next">${last?sj.ui.done:sj.ui.next}</button>`;
+  const nx=document.getElementById('next'); nx.onclick=()=>{ if(last) result(); else {S.i++;question();} }; nx.focus({preventScroll:true});
+  document.querySelector('.progress i').style.width=((S.i+1)/S.qs.length*100)+'%';
+}
+
+function result(){
+  S.screen='result';
+  const n=S.qs.length, pct=S.score/n, stars=pct>=.9?3:pct>=.7?2:pct>=.5?1:0, sj=SUBJECTS[S.subject];
+  const msg=['多练习，你会进步的！','不错，继续加油！','很好！','太棒了！'][stars];
+  app.innerHTML=`
+    <div class="result">
+      <p class="label">${sj.name} · ${LV[S.level][1]}</p>
+      <div class="stars" aria-label="${stars} stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="big">${S.score} / ${n}</div>
+      <p style="font-family:var(--display);font-size:1.4rem;margin:6px 0 0">${msg}</p>
+    </div>
+    ${S.wrong.length?`<p class="label" style="margin-top:18px">复习答错的题目</p>
+    <div class="review">${S.wrong.map(w=>`<div>
+      <div class="q">${w.q.passage?'<span class="muted">（阅读）</span>':''}${w.q.prompt.replace(/<span class="blank">___<\/span>/g,'___')}</div>
+      <div>你的答案：<s>${esc(w.v)}</s> · 正确答案：<b>${esc(w.q.answer)}</b></div>
+      <div class="muted">${w.q.zh}</div></div>`).join('')}</div>`:''}
+    <div class="actions">
+      <button class="btn" id="home">换科目 / 难度</button>
+      <button class="btn primary" id="again">再做新的一套 ↻</button>
+    </div>`;
+  document.getElementById('home').onclick=home;
+  document.getElementById('again').onclick=()=>start(S.level);
+}
+
+document.addEventListener('keydown',e=>{
+  if(S.screen!=='quiz') return;
+  if(!S.answered && /^[1-4]$/.test(e.key)){ const b=document.getElementById('opt-'+(+e.key-1)); if(b) b.click(); }
+});
+
+home();
+</script>
+
+</body>
+</html>
